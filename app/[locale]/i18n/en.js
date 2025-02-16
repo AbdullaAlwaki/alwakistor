@@ -26,4 +26,9 @@ export default {
       confirming: "Confirming...",
       confirmOrder: "Confirm Order",
     },
+    failure: {
+      title: "An Error Occurred!",
+      description: "Sorry, an error occurred while processing your request. Please try again later.",
+      goBack: "Go back to the home page",
+    },
   };
