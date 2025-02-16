@@ -1,0 +1,35 @@
+/* الأنماط العامة */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+.bg-background {
+  background-color: #f9fafb; /* فاتح */
+}
+
+.text-foreground {
+  color: #1f2937; /* داكن */
+}
+
+.dark .bg-background {
+  background-color: #111827; /* داكن */
+}
+
+.dark .text-foreground {
+  color: #ffffff; /* فاتح */
+}
+
+.primary-600 {
+  color: #FF5733;
+}
+
+.primary-700 {
+  color: #FF3300;
+}
