@@ -49,20 +49,20 @@ export default function CheckoutPage() {
         {cartItems.length === 0 ? (
           <p className="text-gray-600">السلة فارغة.</p>
         ) : (
-          cartItems.map((item: { name: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; price: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }, index: Key | null | undefined) => (
-            <li key={index} className="bg-white shadow-md rounded-lg overflow-hidden flex justify-between items-center p-4">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-800">{item.name}</h2>
-                <p className="text-lg text-gray-600">${item.price}</p>
-              </div>
-              <button
-                onClick={() => removeFromCart(index)}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-              >
-                إزالة
-              </button>
-            </li>
-          ))
+          cartItems.map((item: { name: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; price: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }, index: number) => (
+                      <li key={index} className="bg-white shadow-md rounded-lg overflow-hidden flex justify-between items-center p-4">
+                        <div>
+                          <h2 className="text-xl font-semibold text-gray-800">{item.name}</h2>
+                          <p className="text-lg text-gray-600">${item.price}</p>
+                        </div>
+                        <button
+                          onClick={() => removeFromCart(index)}
+                          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                        >
+                          إزالة
+                        </button>
+                      </li>
+                    ))
         )}
       </ul>
 

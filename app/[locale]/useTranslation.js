@@ -36,13 +36,24 @@ export const useTranslation = (locale) => {
     return message || key; // إذا لم يتم العثور على الترجمة، يتم إرجاع المفتاح نفسه
   };
 
-  // دالة لتنسيق العملة
+  // دالة لتنسيق العملة مع الأرقام الغربية
   const formatCurrency = (amount) => {
     const { symbol, locale: currencyLocale } = currencyFormats[validLocale] || currencyFormats.en;
-    return new Intl.NumberFormat(currencyLocale, {
+
+    // تنسيق العملة باستخدام الأرقام الغربية
+    const formattedAmount = new Intl.NumberFormat(currencyLocale, {
       style: "currency",
       currency: currencyLocale === "ar-SA" ? "SAR" : "USD",
-    }).format(amount).replace(/\D00$/, "") + ` ${symbol}`;
+    })
+      .format(amount)
+      .replace(/\D00$/, ""); // إزالة الأصفار غير الضرورية
+
+    // استبدال الأرقام العربية بالأرقام الغربية
+    const westernNumbers = formattedAmount.replace(/[\u0660-\u0669]/g, (char) =>
+      String.fromCharCode(char.charCodeAt(0) - 1632 + 48)
+    );
+
+    return `${westernNumbers} ${symbol}`;
   };
 
   return { t, formatCurrency };
