@@ -2,7 +2,6 @@ export default {
     home: {
       welcome: "Welcome to Alwaki Store",
       description: "Shop the best products at the best prices.",
-      searchPlaceholder: "Search for a product...",
       price: "Price",
       noProducts: "No products available.",
     },
@@ -14,5 +13,17 @@ export default {
       totalPrice: "Total Price:",
       checkout: "Checkout",
       quantity: "Quantity",
+      remove: "Remove",
+    },
+    checkout: {
+      title: "Complete Order",
+      successMessage: "Your order has been confirmed successfully!",
+      errorMessage: "An error occurred while completing the order.",
+      shippingDetails: "Shipping Details",
+      fullName: "Full Name",
+      address: "Address",
+      email: "Email",
+      confirming: "Confirming...",
+      confirmOrder: "Confirm Order",
     },
   };

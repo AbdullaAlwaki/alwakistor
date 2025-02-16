@@ -38,22 +38,18 @@ export const useTranslation = (locale) => {
 
   // دالة لتنسيق العملة مع الأرقام الغربية
   const formatCurrency = (amount) => {
-    const { symbol, locale: currencyLocale } = currencyFormats[validLocale] || currencyFormats.en;
+    const { locale: currencyLocale } = currencyFormats[validLocale] || currencyFormats.en;
 
-    // تنسيق العملة باستخدام الأرقام الغربية
+    // تنسيق العملة باستخدام Intl.NumberFormat
     const formattedAmount = new Intl.NumberFormat(currencyLocale, {
       style: "currency",
       currency: currencyLocale === "ar-SA" ? "SAR" : "USD",
-    })
-      .format(amount)
-      .replace(/\D00$/, ""); // إزالة الأصفار غير الضرورية
+    }).format(amount);
 
     // استبدال الأرقام العربية بالأرقام الغربية
-    const westernNumbers = formattedAmount.replace(/[\u0660-\u0669]/g, (char) =>
+    return formattedAmount.replace(/[\u0660-\u0669]/g, (char) =>
       String.fromCharCode(char.charCodeAt(0) - 1632 + 48)
     );
-
-    return `${westernNumbers} ${symbol}`;
   };
 
   return { t, formatCurrency };
