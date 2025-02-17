@@ -1,9 +1,8 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import prisma from '../../../../lib/prisma'; // استيراد Prisma Client
+import prisma from '../../../../lib/prisma';
 import bcrypt from 'bcrypt';
 
-// تصدير خيارات المصادقة
 const authOptions = {
   providers: [
     CredentialsProvider({
@@ -55,10 +54,9 @@ const authOptions = {
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET, // سر المصادقة
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
-// تصدير الوظيفة الرئيسية للمسار
 const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
