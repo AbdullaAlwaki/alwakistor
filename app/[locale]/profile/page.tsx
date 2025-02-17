@@ -1,4 +1,5 @@
 "use client"; // تحديد أن هذا المكون هو Client Component
+
 import { useState, useEffect } from 'react';
 import { Sun, Moon } from 'lucide-react'; // أيقونات من مكتبة Lucide React
 import { useTranslation } from '../../[locale]/useTranslation';
