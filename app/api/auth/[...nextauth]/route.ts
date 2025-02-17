@@ -1,9 +1,10 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import prisma from '../../../../lib/prisma';
+import prisma from '../../../../lib/prisma'; // استيراد Prisma Client
 import bcrypt from 'bcrypt';
 
-export const authOptions = {
+// تصدير خيارات المصادقة
+const authOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -31,12 +32,13 @@ export const authOptions = {
           throw new Error('كلمة المرور غير صحيحة');
         }
 
+        // إرجاع بيانات المستخدم
         return { id: user.id, email: user.email, name: user.name };
       },
     }),
   ],
   callbacks: {
-    jwt({ token, user }: { token: any, user: any }) {
+    jwt({ token, user }: { token: any; user: any }) {
       if (user) {
         token.id = user.id;
         token.email = user.email;
@@ -44,7 +46,7 @@ export const authOptions = {
       }
       return token;
     },
-    session({ session, token }: { session: any, token: any }) {
+    session({ session, token }: { session: any; token: any }) {
       if (token) {
         session.user.id = token.id;
         session.user.email = token.email;
@@ -53,9 +55,10 @@ export const authOptions = {
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET, // سر المصادقة
 };
 
+// تصدير الوظيفة الرئيسية للمسار
 const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
