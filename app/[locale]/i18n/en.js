@@ -44,7 +44,7 @@ export default {
     cart: "Cart",
     checkout: "Checkout",
     trackOrder: "Track Order",
-    profile: "Profile",
+    profile: "Profile", // إضافة هذه الترجمة
     lightMode: "Light Mode",
     darkMode: "Dark Mode",
   },

@@ -42,9 +42,9 @@ export default {
     cart: "السلة",
     checkout: "إكمال الطلب",
     trackOrder: "تتبع الطلب",
-    profile: "البروفايل",
+    profile: "الصفحة الشخصية", // إضافة هذه الترجمة
     lightMode: "الوضع الفاتح",
-    darkMode: "الوضع الداكن",
+    darkMode: "الوضع المظلم",
   },
   profile: {
     title: "البروفايل",
