@@ -1,8 +1,9 @@
-"use client"; // إذا كان المكون يستخدم React Hooks
+"use client"; // ✅ تحديد أن هذا المكون هو Client Component
+
 import Link from 'next/link';
 import { ShoppingCart, CheckCircle, PackageSearch, User } from 'lucide-react';
 import { useCart } from './CartContext';
-import { useTranslation } from '../app/[locale]/useTranslation'; // ✅ استخدام المسار الصحيح
+import { useTranslation } from '../app/[locale]/useTranslation';
 
 // تعريف نوع الـ props
 interface NavbarProps {

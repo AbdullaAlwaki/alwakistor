@@ -1,4 +1,6 @@
-import React from 'react';
+"use client"; // ✅ تحديد أن هذا المكون هو Client Component
+
+import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar'; // استيراد شريط التنقل
 import { CartProvider } from '../../components/CartContext'; // سياق السلة
 import PageTransition from '../../components/PageTransition'; // تأثير الانتقال بين الصفحات
@@ -10,10 +12,19 @@ export default function RootLayout({
   params, // تمرير الـ params مباشرة
 }: {
   children: React.ReactNode;
-  params: { locale: string }; // تعريف النوع
+  params: Promise<{ locale: string }>; // تعريف النوع كـ Promise
 }) {
+  const [locale, setLocale] = useState<string>('en'); // حالة اللغة الافتراضية
+
+  // انتظار الـ params وتحديث اللغة
+  useEffect(() => {
+    params.then((unwrappedParams) => {
+      setLocale(unwrappedParams.locale);
+    });
+  }, [params]);
+
   return (
-    <html lang={params.locale} dir={params.locale === 'ar' ? 'rtl' : 'ltr'}>
+    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -24,7 +35,7 @@ export default function RootLayout({
         {/* توفير السياق الدولي */}
         <CartProvider>
           {/* شريط التنقل */}
-          <Navbar locale={params.locale} />
+          <Navbar locale={locale} />
           {/* التفاف المحتوى بمكون PageTransition */}
           <PageTransition>
             <main className="container mx-auto p-4">{children}</main>
