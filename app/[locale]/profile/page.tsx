@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Sun, Moon } from 'lucide-react'; // أيقونات من مكتبة Lucide React
 import { useTranslation } from '../../[locale]/useTranslation';
+import React from 'react';
 
 export default function ProfilePage({ params }: { params: Promise<{ locale: string }> }) {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');

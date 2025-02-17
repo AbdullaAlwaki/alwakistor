@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ShoppingCart, CheckCircle, PackageSearch, User } from 'lucide-react';
 import { useCart } from './CartContext';
 import { useTranslation } from '../app/[locale]/useTranslation';
+import React from 'react';
 
 // تعريف نوع الـ props
 interface NavbarProps {

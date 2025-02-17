@@ -76,5 +76,39 @@ export default {
     password: "Password",
     submit: "Login",
     forgotPassword: "Forgot your password?",
+  },  signup: {
+    title: "Create Account",
+    name: "Name",
+    email: "Email",
+    password: "Password",
+    submit: "Create Account",
+    success: "User registered successfully",
+    error: "An error occurred while registering the user",
+    loginLink: "Already have an account? Login",
+  },  dashboard: {
+    title: "Admin Dashboard",
+    manageProducts: "Manage Products",
+    manageOrders: "Manage Orders",
+    goBack: "Go back to the home page",
+  },  forgotPassword: {
+    title: "Forgot Password",
+    email: "Email",
+    submit: "Send Recovery Link",
+    success: "A password recovery link has been sent to your email",
+    error: "An error occurred while sending the link",
+    loginLink: "Remember your password? Login",
+  },  dashboard: {
+    title: "Admin Dashboard",
+    manageProducts: "Manage Products",
+    manageOrders: "Manage Orders",
+    goBack: "Go back to the home page",
+  },
+  products: {
+    title: "Manage Products",
+    description: "Here you can add, edit, or delete products.",
+  },
+  orders: {
+    title: "Manage Orders",
+    description: "Here you can review and manage orders.",
   },
 };

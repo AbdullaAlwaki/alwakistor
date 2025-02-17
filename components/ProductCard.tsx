@@ -1,6 +1,7 @@
 "use client"; // تحديد أن هذا المكون هو Client Component
 
 import Image from 'next/image'; // ✅ استخدام next/image لتحسين الصور
+import React from 'react';
 import { toast } from 'react-toastify'; // ✅ إضافة التنبيهات
 import 'react-toastify/dist/ReactToastify.css';
 

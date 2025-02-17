@@ -5,11 +5,17 @@ export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // استخراج اللغة من المسار
-  const pathnameHasLocale = /^\/(ar|en)(\/.*)?$/.test(pathname);
+  const locales = ['ar', 'en']; // اللغات المدعومة
+  const defaultLocale = 'ar'; // اللغة الافتراضية
+
+  // التحقق مما إذا كان المسار يحتوي على لغة
+  const pathnameHasLocale = locales.some(
+    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
+  );
 
   if (!pathnameHasLocale) {
-    // إعادة توجيه إلى اللغة الافتراضية (العربية)
-    return NextResponse.redirect(new URL(`/ar${pathname}`, request.url));
+    // إعادة توجيه إلى اللغة الافتراضية مع الحفاظ على المسار الأصلي
+    return NextResponse.redirect(new URL(`/${defaultLocale}${pathname}`, request.url));
   }
 
   return NextResponse.next();

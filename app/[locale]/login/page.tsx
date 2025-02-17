@@ -1,9 +1,8 @@
-"use client"; // تحديد أن هذا المكون هو Client Component
+"use client";
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { useTranslation } from '../../[locale]/useTranslation';
-import React from 'react';
+import { useTranslation } from '../useTranslation';
 
 export default function LoginPage({ params }: { params: Promise<{ locale: string }> }) {
   const [locale, setLocale] = useState<string>('en');
