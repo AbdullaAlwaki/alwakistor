@@ -57,7 +57,5 @@ export async function POST(request: Request) {
       { success: false, message: 'حدث خطأ أثناء تأكيد البريد الإلكتروني.' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

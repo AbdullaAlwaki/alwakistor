@@ -7,6 +7,7 @@ import { useTranslation } from '../app/[locale]/useTranslation'; // ✅ استي
 import { useContext } from 'react';
 import { DarkModeContext } from '../context/DarkModeContext'; // ✅ استيراد سياق الوضع المظلم
 import { useAuth } from '../context/AuthContext'; // ✅ استيراد سياق تسجيل الدخول
+import React from 'react';
 
 interface NavbarProps {
   locale: string; // ✅ إضافة locale كخاصية

@@ -9,8 +9,8 @@ const prisma = new PrismaClient();
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    user: process.env.EMAIL_USER, // عنوان بريدك الإلكتروني
+    pass: process.env.EMAIL_PASS, // كلمة مرور بريدك الإلكتروني أو "كلمة مرور التطبيق"
   },
 });
 
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     });
 
     // إنشاء رابط التأكيد
-    const verificationLink = `${process.env.NEXTAUTH_URL}/verify-email?token=${verificationToken}&email=${email}`;
+    const verificationLink = `${process.env.NEXTAUTH_URL}/verify-email?token=${encodeURIComponent(verificationToken)}&email=${encodeURIComponent(email)}`;
 
     // إرسال البريد الإلكتروني
     const mailOptions = {
@@ -62,6 +62,8 @@ export async function POST(request: Request) {
     };
     await transporter.sendMail(mailOptions);
 
+    console.log('Sent verification link:', verificationLink); // ✅ تسجيل الرابط لتحليل المشكلة
+
     return NextResponse.json(
       { message: 'تم إنشاء الحساب بنجاح. يرجى تأكيد بريدك الإلكتروني.' },
       { status: 201 }
@@ -69,7 +71,5 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'حدث خطأ أثناء إنشاء الحساب' }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
   }
 }

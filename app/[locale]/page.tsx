@@ -1,7 +1,6 @@
 "use client"; // Specify that this is a Client Component
 
 import { useEffect, useState, useRef } from 'react';
-import Link from 'next/link';
 import { ShoppingCart } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import SearchBar from '../../components/SearchBar';
@@ -10,6 +9,7 @@ import Skeleton from '../../components/Skeleton';
 import ProgressBar from '../../components/ProgressBar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from './useTranslation';
+import React from 'react';
 
 export default function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const [locale, setLocale] = useState<string>('en'); // Default language is English
@@ -36,7 +36,7 @@ export default function HomePage({ params }: { params: Promise<{ locale: string 
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/api/get-products'); // API endpoint to fetch products
+      const response = await fetch('/api/products'); // API endpoint to fetch products
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.message || 'Invalid server response.');
