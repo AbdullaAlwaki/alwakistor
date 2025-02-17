@@ -74,8 +74,10 @@ export default {
     title: "Login",
     email: "Email",
     password: "Password",
-    submit: "Login",
-    forgotPassword: "Forgot your password?",
+    submit: "Sign In",
+    forgotPassword: "Forgot Password?",
+    loading: "Loading...",
+    error: "An error occurred while logging in.",
   },  signup: {
     title: "Create Account",
     name: "Name",
