@@ -70,4 +70,11 @@ export default {
       "You can track the status of your order using the tracking number.",
     goBack: "Go back to the home page",
   },
+  login: {
+    title: "Login",
+    email: "Email",
+    password: "Password",
+    submit: "Login",
+    forgotPassword: "Forgot your password?",
+  },
 };
