@@ -31,4 +31,9 @@ export default {
       description: "Sorry, an error occurred while processing your request. Please try again later.",
       goBack: "Go back to the home page",
     },
+    payment: {
+      title: "Payment Successful!",
+      description: "Thank you for your purchase. Your order will be delivered soon.",
+      goBack: "Go back to the home page",
+    },
   };
