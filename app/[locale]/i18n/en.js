@@ -58,4 +58,16 @@ export default {
     lightMode: "Light",
     darkMode: "Dark",
   },
+  success: {
+    title: "Operation Successful!",
+    description:
+      "Thank you for your purchase. Your order will be delivered soon.",
+    goBack: "Go back to the home page",
+  },
+  trackOrder: {
+    title: "Track Order",
+    description:
+      "You can track the status of your order using the tracking number.",
+    goBack: "Go back to the home page",
+  },
 };
