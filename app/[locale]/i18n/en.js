@@ -47,6 +47,8 @@ export default {
     profile: "Profile", // إضافة هذه الترجمة
     lightMode: "Light Mode",
     darkMode: "Dark Mode",
+    signIn: "Sign In",
+    searchPlaceholder: "Search for a product...",
   },
   profile: {
     title: "Profile",
@@ -64,12 +66,7 @@ export default {
       "Thank you for your purchase. Your order will be delivered soon.",
     goBack: "Go back to the home page",
   },
-  trackOrder: {
-    title: "Track Order",
-    description:
-      "You can track the status of your order using the tracking number.",
-    goBack: "Go back to the home page",
-  },
+ 
   login: {
     title: "Login",
     email: "Email",

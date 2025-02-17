@@ -10,11 +10,23 @@ import { AuthProvider } from '../../context/AuthContext'; // استيراد Auth
 
 export default function RootLayout({
   children,
-  params: { locale },
+  params, // ✅ لا تقوم بفك الـ Destructuring هنا
 }: {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }> | { locale: string }; // ✅ إضافة نوع Promise
 }) {
+  const [locale, setLocale] = React.useState<string>('en'); // ✅ إنشاء حالة لتخزين اللغة
+
+  React.useEffect(() => {
+    if (params instanceof Promise) {
+      params.then((unwrappedParams) => {
+        setLocale(unwrappedParams.locale); // ✅ تحديث اللغة الحالية
+      });
+    } else {
+      setLocale(params.locale); // ✅ إذا لم يكن Promise، قم بتعيين اللغة مباشرة
+    }
+  }, [params]);
+
   return (
     <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
       <head>

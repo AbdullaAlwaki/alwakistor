@@ -45,6 +45,8 @@ export default {
     profile: "الصفحة الشخصية", // إضافة هذه الترجمة
     lightMode: "الوضع الفاتح",
     darkMode: "الوضع المظلم",
+    signIn: "تسجيل الدخول",
+    searchPlaceholder: "ابحث عن منتج...",
   },
   profile: {
     title: "البروفايل",
@@ -61,11 +63,7 @@ export default {
     description: "شكرًا لك على الشراء. سيتم تسليم طلبك قريبًا.",
     goBack: "العودة إلى الصفحة الرئيسية",
   },
-  trackOrder: {
-    title: "تتبع الطلب",
-    description: "يمكنك تتبع حالة طلبك باستخدام رقم التتبع.",
-    goBack: "العودة إلى الصفحة الرئيسية",
-  },  login: {
+    login: {
     title: "تسجيل الدخول",
     email: "البريد الإلكتروني",
     password: "كلمة المرور",

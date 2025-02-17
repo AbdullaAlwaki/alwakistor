@@ -7,10 +7,10 @@ const prisma = new PrismaClient();
 
 // إعداد خدمة إرسال البريد الإلكتروني
 const transporter = nodemailer.createTransport({
-  service: 'Gmail', // أو أي خدمة بريد أخرى
+  service: 'Gmail',
   auth: {
-    user: process.env.EMAIL_USER, // عنوان البريد الإلكتروني الخاص بك
-    pass: process.env.EMAIL_PASS, // كلمة المرور الخاصة بك
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
@@ -27,7 +27,6 @@ export async function POST(request: Request) {
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
-
     if (existingUser) {
       return NextResponse.json({ error: 'هذا البريد الإلكتروني مستخدم بالفعل' }, { status: 400 });
     }
@@ -35,17 +34,18 @@ export async function POST(request: Request) {
     // تشفير كلمة المرور
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // إنشاء رمز التحقق
+    // إنشاء رمز التأكيد
     const verificationToken = Math.random().toString(36).substring(2, 15); // رمز عشوائي
 
-    // إنشاء المستخدم الجديد مع رمز التحقق
+    // إنشاء المستخدم الجديد مع رمز التأكيد
     const newUser = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        emailVerified: false, // البدء بحالة غير مؤكدة
-        emailVerificationToken: verificationToken, // ✅ إضافة رمز التحقق
+        emailVerified: false,
+        emailVerificationToken: verificationToken,
+        emailVerificationTokenCreatedAt: new Date(), // ✅ إضافة تاريخ إنشاء الرمز
       },
     });
 
@@ -60,10 +60,12 @@ export async function POST(request: Request) {
       text: `مرحبًا ${name}،\n\nيرجى تأكيد بريدك الإلكتروني بالنقر على الرابط التالي:\n${verificationLink}`,
       html: `<p>مرحبًا ${name}،</p><p>يرجى تأكيد بريدك الإلكتروني بالنقر على الرابط التالي:</p><a href="${verificationLink}">${verificationLink}</a>`,
     };
-
     await transporter.sendMail(mailOptions);
 
-    return NextResponse.json({ message: 'تم إنشاء الحساب بنجاح. يرجى تأكيد بريدك الإلكتروني.' }, { status: 201 });
+    return NextResponse.json(
+      { message: 'تم إنشاء الحساب بنجاح. يرجى تأكيد بريدك الإلكتروني.' },
+      { status: 201 }
+    );
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'حدث خطأ أثناء إنشاء الحساب' }, { status: 500 });

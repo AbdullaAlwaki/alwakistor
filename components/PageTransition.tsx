@@ -1,28 +1,29 @@
 "use client"; // ✅ تحديد أن هذا المكون هو Client Component
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-interface PageTransitionProps {
-  children: React.ReactNode;
-}
+export default function PageTransition({ children }: { children: React.ReactNode }) {
+  const [pathname, setPathname] = useState('/'); // ✅ إنشاء حالة لتخزين المسار الحالي
 
-const variants = {
-  hidden: { opacity: 0, x: -20 },
-  enter: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: 20 },
-};
+  useEffect(() => {
+    // تحديث المسار عند تغيير الصفحة
+    setPathname(window.location.pathname);
+  }, []);
 
-export default function PageTransition({ children }: PageTransitionProps) {
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        key={location.pathname} // يتم تحديث المفتاح عند تغيير الصفحة
+        key={pathname} // ✅ استخدام المسار الحالي كمفتاح
         initial="hidden"
         animate="enter"
         exit="exit"
-        variants={variants}
-        transition={{ type: 'linear', duration: 0.3 }}
+        variants={{
+          hidden: { opacity: 0, x: -20 },
+          enter: { opacity: 1, x: 0 },
+          exit: { opacity: 0, x: 20 },
+        }}
+        transition={{ duration: 0.3 }}
       >
         {children}
       </motion.div>
