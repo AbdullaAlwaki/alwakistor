@@ -13,7 +13,7 @@ interface NavbarProps {
   isDarkMode?: boolean; // حالة الثيم الحالي (اختيارية)
 }
 
-export default function Navbar({ locale, toggleTheme, isDarkMode }: NavbarProps) {
+export default function GeneralNavbar({ locale, toggleTheme, isDarkMode }: NavbarProps) {
   const { cartItems } = useCart();
   const { t } = useTranslation(locale);
 

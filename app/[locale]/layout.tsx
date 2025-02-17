@@ -1,12 +1,12 @@
 "use client"; // ✅ تحديد أن هذا المكون هو Client Component
 
-import React, { useState, useEffect } from 'react';
-import Navbar from '../../components/Navbar'; // استيراد شريط التنقل
+import React from 'react';
+import GeneralNavbar from '../../components/GeneralNavbar'; // استيراد شريط التنقل
 import { CartProvider } from '../../components/CartContext'; // سياق السلة
 import PageTransition from '../../components/PageTransition'; // تأثير الانتقال بين الصفحات
 import '../styles/globals.css'; // استيراد الأنماط العامة
+import { useDarkMode } from '../../hooks/useDarkMode'; // Hook لإدارة الوضع المظلم
 
-// Server Component
 export default function RootLayout({
   children,
   params, // تمرير الـ params مباشرة
@@ -14,17 +14,34 @@ export default function RootLayout({
   children: React.ReactNode;
   params: Promise<{ locale: string }>; // تعريف النوع كـ Promise
 }) {
-  const [locale, setLocale] = useState<string>('en'); // حالة اللغة الافتراضية
+  const [locale, setLocale] = React.useState<string>('en'); // حالة اللغة الافتراضية
+  const { isDarkMode, toggleDarkMode } = useDarkMode(); // إدارة الوضع المظلم
 
   // انتظار الـ params وتحديث اللغة
-  useEffect(() => {
+  React.useEffect(() => {
     params.then((unwrappedParams) => {
-      setLocale(unwrappedParams.locale);
+      const currentLocale = unwrappedParams.locale || 'en'; // ضمان وجود قيمة افتراضية
+      setLocale(currentLocale);
+
+      // حفظ اللغة في localStorage لاستعادتها عند إعادة التحميل
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('locale', currentLocale);
+      }
     });
   }, [params]);
 
+  // استرداد اللغة من localStorage عند تحميل الصفحة
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedLocale = localStorage.getItem('locale');
+      if (savedLocale) {
+        setLocale(savedLocale);
+      }
+    }
+  }, []);
+
   return (
-    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+    <html lang={locale} className={isDarkMode ? 'dark' : ''}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -35,7 +52,8 @@ export default function RootLayout({
         {/* توفير السياق الدولي */}
         <CartProvider>
           {/* شريط التنقل */}
-          <Navbar locale={locale} />
+          <GeneralNavbar locale={locale} toggleTheme={toggleDarkMode} isDarkMode={isDarkMode} />
+
           {/* التفاف المحتوى بمكون PageTransition */}
           <PageTransition>
             <main className="container mx-auto p-4">{children}</main>
