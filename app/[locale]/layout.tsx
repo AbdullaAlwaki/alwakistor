@@ -1,45 +1,47 @@
-// ✅ هذا الملف لا يحتوي على "use client"، وبالتالي يمكن تصدير metadata منه
+"use client"; // ✅ تحديد أن هذا المكون هو Client Component
+
 import React from 'react';
 import GeneralNavbar from '../../components/GeneralNavbar';
-import { CartProvider } from '../../components/CartContext';
 import PageTransition from '../../components/PageTransition';
 import '../styles/globals.css';
-
-export const metadata = {
-  title: 'Alwaki Store',
-  description: 'متجر Alwaki - تسوق أفضل المنتجات بأفضل الأسعار.',
-};
+import { DarkModeProvider } from '../../context/DarkModeContext'; // استيراد DarkModeProvider
+import { CartProvider } from '../../context/CartContext'; // استيراد CartProvider
 
 export default function RootLayout({
   children,
-  params,
+  params, // ✅ استقبال params كـ Promise
 }: {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
+  const [locale, setLocale] = React.useState<string>('en'); // ✅ إنشاء حالة لتخزين اللغة
+
+  React.useEffect(() => {
+    // فك الـ Promise والحصول على قيمة locale
+    params.then((unwrappedParams) => {
+      setLocale(unwrappedParams.locale);
+    });
+  }, [params]);
+
   return (
-    <html lang="en" className="dark">
+    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>{metadata.title}</title>
-        <meta name="description" content={metadata.description} />
+        <title>Alwaki Store</title>
+        <meta name="description" content="متجر Alwaki - تسوق أفضل المنتجات بأفضل الأسعار." />
       </head>
       <body className="bg-background text-foreground min-h-screen">
-        <CartProvider>
-          {/* شريط التنقل */}
-          <GeneralNavbarWrapper />
-          {/* التفاف المحتوى بمكون PageTransition */}
-          <PageTransition>
-            <main className="container mx-auto p-4">{children}</main>
-          </PageTransition>
-        </CartProvider>
+        {/* تغليف التطبيق بـ DarkModeProvider و CartProvider */}
+        <DarkModeProvider>
+          <CartProvider>
+            <GeneralNavbar locale={locale} />
+            <PageTransition>
+              <main className="container mx-auto p-4">{children}</main>
+            </PageTransition>
+          </CartProvider>
+        </DarkModeProvider>
       </body>
     </html>
   );
-}
-
-// مكون Wrapper لشريط التنقل
-function GeneralNavbarWrapper() {
-  return <GeneralNavbar locale={''} />;
 }

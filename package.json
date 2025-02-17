@@ -27,6 +27,7 @@
     "next": "^15.1.7",
     "next-auth": "^4.24.11",
     "next-intl": "^3.26.3",
+    "nodemailer": "^6.10.0",
     "pusher": "^5.2.0",
     "qrcode": "^1.5.4",
     "react": "^19.0.0",
@@ -40,6 +41,7 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/node": "^20",
+    "@types/nodemailer": "^6.4.17",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.20",

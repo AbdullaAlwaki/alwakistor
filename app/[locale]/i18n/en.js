@@ -78,28 +78,33 @@ export default {
     forgotPassword: "Forgot Password?",
     loading: "Loading...",
     error: "An error occurred while logging in.",
-  },  signup: {
-    title: "Create Account",
+  },
+  signup: {
+    title: "Sign Up",
     name: "Name",
     email: "Email",
     password: "Password",
     submit: "Create Account",
-    success: "User registered successfully",
-    error: "An error occurred while registering the user",
-    loginLink: "Already have an account? Login",
-  },  dashboard: {
+    loading: "Loading...",
+    success: "Account created successfully!",
+    error: "An error occurred while creating the account.",
+    loginLink: "Already have an account? Sign In",
+  },
+  dashboard: {
     title: "Admin Dashboard",
     manageProducts: "Manage Products",
     manageOrders: "Manage Orders",
     goBack: "Go back to the home page",
-  },  forgotPassword: {
+  },
+  forgotPassword: {
     title: "Forgot Password",
     email: "Email",
     submit: "Send Recovery Link",
     success: "A password recovery link has been sent to your email",
     error: "An error occurred while sending the link",
     loginLink: "Remember your password? Login",
-  },  dashboard: {
+  },
+  dashboard: {
     title: "Admin Dashboard",
     manageProducts: "Manage Products",
     manageOrders: "Manage Orders",

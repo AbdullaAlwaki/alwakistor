@@ -8,11 +8,13 @@ datasource db {
 }
 
 model User {
-  id       String   @id @default(auto()) @map("_id") @db.ObjectId
-  name     String
-  email    String   @unique
-  password String
-  role     String   @default("user") // admin, vendor, user
+  id                     String   @id @default(auto()) @map("_id") @db.ObjectId // ✅ إضافة @map("_id") و@db.ObjectId
+  name                   String?
+  email                  String   @unique
+  password               String
+  role                   String?  @default("user")
+  emailVerified          Boolean? @default(false) // حالة التحقق من البريد الإلكتروني
+  emailVerificationToken String?  // رمز التحقق المرسل إلى البريد الإلكتروني
 }
 
 model Product {

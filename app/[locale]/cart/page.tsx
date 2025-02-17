@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { ShoppingCart, Trash2 } from 'lucide-react';
-import { useCart } from '../../../components/CartContext';
+import { useCart } from '../../../context/CartContext';
 import Link from 'next/link';
 import { useTranslation } from '../useTranslation';
 

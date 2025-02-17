@@ -8,7 +8,7 @@ type Product = {
   price: number;
   quantity?: number;
 };
-import { useCart } from '../../../components/CartContext';
+import { useCart } from '../../../context/CartContext';
 import { useTranslation } from '../useTranslation';
 
 export default function CheckoutPage({ params }: { params: Promise<{ locale: string }> }) {

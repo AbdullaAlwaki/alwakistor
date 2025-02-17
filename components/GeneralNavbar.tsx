@@ -1,30 +1,24 @@
-"use client"; // ✅ هذا المكون هو Client Component
+"use client"; // ✅ تحديد أن هذا المكون هو Client Component
 
 import Link from 'next/link';
 import { ShoppingCart, CheckCircle, PackageSearch, User, Search } from 'lucide-react';
-import { useCart } from './CartContext';
 import { useTranslation } from '../app/[locale]/useTranslation';
-import { useDarkMode } from '../hooks/useDarkMode'; // ✅ استيراد Hook بشكل صحيح
-import React, { useState } from 'react';
+import { useContext } from 'react';
+import { DarkModeContext } from '../context/DarkModeContext'; // استيراد DarkModeContext
+import React from 'react';
 
 interface NavbarProps {
-  locale: string;
+  locale: string; // ✅ إضافة locale كخاصية
 }
 
 export default function GeneralNavbar({ locale }: NavbarProps) {
   const { cartItems } = useCart();
   const { t } = useTranslation(locale);
-  const { isDarkMode, toggleDarkMode } = useDarkMode(); // ✅ استخدام Hook
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Searching for:', searchQuery);
-  };
+  const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext); // استخدام DarkModeContext
 
   return (
     <>
-      {/* شريط التنقل العلوي */}
+      {/* شريط التنقل العلوي (للشاشات الكبيرة) */}
       <nav className="bg-background shadow-md p-4 lg:flex justify-between items-center hidden">
         <div>
           <Link href={`/${locale}`} className="text-xl font-bold text-foreground flex items-center gap-2">
@@ -34,13 +28,13 @@ export default function GeneralNavbar({ locale }: NavbarProps) {
         </div>
         <div className="flex gap-6 items-center">
           {/* شريط البحث */}
-          <form onSubmit={handleSearch} className="relative">
+          <form className="relative">
             <input
               type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t('navbar.searchPlaceholder')}
-              className="bg-gray-100 dark:bg-gray-700 text-foreground px-4 py-2 rounded-full w-64 focus:outline-none focus:ring-2 focus:ring-accent"
+              className={`w-64 p-2 border rounded ${
+                isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-800'
+              } focus:outline-none focus:ring-2 focus:ring-accent`}
             />
             <button type="submit" className="absolute right-2 top-1/2 transform -translate-y-1/2">
               <Search size={20} className="text-foreground" />
@@ -64,16 +58,18 @@ export default function GeneralNavbar({ locale }: NavbarProps) {
             <User size={20} />
             <span>{t('navbar.profile')}</span>
           </Link>
+          {/* تبديل اللغة */}
           <Link href={`/${locale === 'ar' ? 'en' : 'ar'}`} className="text-foreground hover:text-accent">
             {locale === 'ar' ? 'English' : 'العربية'}
           </Link>
+          {/* زر تبديل الوضع المظلم */}
           <button onClick={toggleDarkMode} className="text-foreground hover:text-accent">
             {isDarkMode ? t('navbar.lightMode') : t('navbar.darkMode')}
           </button>
         </div>
       </nav>
 
-      {/* شريط التنقل السفلي للهواتف */}
+      {/* شريط التنقل السفلي (للهواتف) */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-background shadow-md p-2 flex justify-around items-center">
         <Link href={`/${locale}`} className="text-foreground hover:text-accent flex flex-col items-center">
           <PackageSearch size={24} />
@@ -96,13 +92,18 @@ export default function GeneralNavbar({ locale }: NavbarProps) {
           <User size={24} />
           <span className="text-xs">{t('navbar.profile')}</span>
         </Link>
-        <Link href={`/${locale === 'ar' ? 'en' : 'ar'}`} className="text-foreground hover:text-accent flex flex-col items-center">
-          <span className="text-xs">{locale === 'ar' ? 'English' : 'العربية'}</span>
-        </Link>
+        {/* زر تبديل الوضع المظلم للهواتف */}
         <button onClick={toggleDarkMode} className="text-foreground hover:text-accent flex flex-col items-center">
           <span className="text-xs">{isDarkMode ? t('navbar.lightMode') : t('navbar.darkMode')}</span>
         </button>
       </nav>
     </>
   );
+}
+
+function useCart() {
+  // Implement your useCart hook here
+  return {
+    cartItems: [], // Replace with actual cart items
+  };
 }

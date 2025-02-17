@@ -1,9 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  experimental: {
-    esmExternals: false, // تعطيل ESM Externals لدعم CommonJS
-  },
+  reactStrictMode: true, // تمكين وضع التصحيح الصارم
+  swcMinify: true,       // تمكين تقليل الحجم باستخدام SWC
 };
 
-export default nextConfig;
+module.exports = nextConfig; // ✅ استخدام module.exports بدلاً من export default

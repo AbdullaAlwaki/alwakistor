@@ -1,6 +1,6 @@
-"use client"; // تحديد أن هذا المكون هو Client Component
+"use client"; // ✅ تحديد أن هذا المكون هو Client Component
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 // تعريف نوع المنتج
 interface Product {
@@ -24,7 +24,7 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | null>(null);
 
 // مزود السياق
-export const CartProvider = ({ children }: { children: ReactNode }) => {
+export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cartItems, setCartItems] = useState<Product[]>([]);
 
   // دالة لإضافة منتج إلى السلة

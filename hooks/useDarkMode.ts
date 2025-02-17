@@ -1,4 +1,4 @@
-"use client"; // ✅ تحديد أن هذا الملف هو Client Component
+"use client"; // ✅ تحديد أن هذا المكون هو Client Component
 
 import { useState, useEffect } from 'react';
 
@@ -11,6 +11,11 @@ export function useDarkMode() {
   });
 
   useEffect(() => {
+    const handleStorageChange = () => {
+      setIsDarkMode(localStorage.getItem('darkMode') === 'true');
+    };
+
+    // تحديث الوضع المظلم بناءً على localStorage
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('darkMode', 'true');
@@ -18,10 +23,18 @@ export function useDarkMode() {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('darkMode', 'false');
     }
+
+    // استماع لتغيرات localStorage
+    window.addEventListener('storage', handleStorageChange);
+
+    // تنظيف الحدث عند إلغاء المكون
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [isDarkMode]);
 
   const toggleDarkMode = () => {
-    setIsDarkMode((prev) => !prev);
+    setIsDarkMode((prev) => !prev); // تحديث الحالة مباشرة
   };
 
   return { isDarkMode, toggleDarkMode };
