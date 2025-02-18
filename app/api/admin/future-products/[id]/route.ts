@@ -10,6 +10,14 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     const body = await request.json();
     const { name, description, price, imageUrl, releaseDate } = body; // ✅ إضافة حقل تاريخ الإصدار
 
+    // التحقق من صحة البيانات
+    if (!name || !price || !releaseDate) {
+      return NextResponse.json(
+        { success: false, message: 'Name, price, and release date are required.' },
+        { status: 400 }
+      );
+    }
+
     // تحديث المنتج المستقبلي
     const updatedProduct = await FutureProduct.findByIdAndUpdate(
       id,
