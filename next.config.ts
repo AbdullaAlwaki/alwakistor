@@ -1,8 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true, // تمكين وضع التصحيح الصارم
-  images: {
-    domains: ["pattersonpope.com"], // ✅ إضافة اسم النطاق هنا
+  i18n: {
+    locales: ['en', 'ar'], // اللغات المدعومة
+    defaultLocale: 'en', // اللغة الافتراضية
   },
 };
 
