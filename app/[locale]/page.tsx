@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from './useTranslation';
 
@@ -8,7 +7,7 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { t } = useTranslation(locale);
+  const { t, formatCurrency } = useTranslation(locale);
 
   useEffect(() => {
     if (params) {
@@ -24,11 +23,17 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
 
         // التحقق مما إذا كانت الاستجابة ناجحة
         if (!response.ok) {
-          const errorData = await response.json(); // ✅ قراءة البيانات مرة واحدة
+          const errorData = await response.json();
           throw new Error(errorData.message || 'Invalid server response.');
         }
 
-        const data = await response.json(); // ✅ إعادة استخدام البيانات
+        const data = await response.json();
+
+        // التحقق من هيكل البيانات
+        if (!Array.isArray(data.data)) {
+          throw new Error('Unexpected data format.');
+        }
+
         setProducts(data.data); // تحديث قائمة المنتجات
       } catch (e) {
         setError(e instanceof Error ? e.message : t('products.error'));
@@ -52,10 +57,7 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product) => (
-            <div
-              key={product.id}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden"
-            >
+            <div key={product.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
               {product.imageUrl && (
                 <img
                   src={product.imageUrl}
@@ -70,7 +72,9 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
                 <p className="text-gray-600 dark:text-gray-400 mt-2">
                   {product.description || t('products.noDescription')}
                 </p>
-                <p className="text-green-500 font-bold mt-4">${product.price}</p>
+                <p className="text-green-500 font-bold mt-4">
+                  {formatCurrency(product.price)}
+                </p>
               </div>
             </div>
           ))}

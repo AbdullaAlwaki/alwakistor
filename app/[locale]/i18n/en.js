@@ -116,4 +116,34 @@ export default {
     title: "Manage Orders",
     description: "Here you can review and manage orders.",
   },
+  admin: {
+    products: {
+      title: 'Manage Products',
+      description: 'You can add, edit, or delete products from here.',
+      addProduct: 'Add New Product',
+      list: 'Products List',
+      editProduct: 'Edit Product',
+      confirmDelete: 'Are you sure you want to delete this product?',
+      form: {
+        name: 'Product Name',
+        description: 'Product Description',
+        price: 'Product Price',
+        imageUrl: 'Image URL',
+        submit: 'Add Product',
+        update: 'Update Product',
+        cancel: 'Cancel',
+      },
+      table: {
+        name: 'Name',
+        description: 'Description',
+        price: 'Price',
+        image: 'Image',
+        actions: 'Actions',
+      },
+      actions: {
+        edit: 'Edit',
+        delete: 'Delete',
+      },
+    },
+  },
 };

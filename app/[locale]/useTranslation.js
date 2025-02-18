@@ -14,10 +14,17 @@ const currencyFormats = {
   ar: {
     symbol: "ر.س", // ريال سعودي
     locale: "ar-SA",
+    currency: "SAR",
   },
   en: {
     symbol: "$", // دولار أمريكي
     locale: "en-US",
+    currency: "USD",
+  },
+  fr: {
+    symbol: "€", // يورو
+    locale: "fr-FR",
+    currency: "EUR",
   },
 };
 
@@ -27,23 +34,28 @@ export const useTranslation = (locale) => {
 
   // الحصول على الترجمة بناءً على اللغة
   const t = (key) => {
-    const keys = key.split(".");
-    let message = translations[validLocale];
-    for (const k of keys) {
-      message = message?.[k];
-      if (!message) break;
+    try {
+      const keys = key.split(".");
+      let message = translations[validLocale];
+      for (const k of keys) {
+        message = message?.[k];
+        if (!message) break;
+      }
+      return message || key; // إذا لم يتم العثور على الترجمة، يتم إرجاع المفتاح نفسه
+    } catch (error) {
+      console.error(`Error fetching translation for key: ${key}`, error);
+      return key; // إرجاع المفتاح في حالة حدوث خطأ
     }
-    return message || key; // إذا لم يتم العثور على الترجمة، يتم إرجاع المفتاح نفسه
   };
 
   // دالة لتنسيق العملة مع الأرقام الغربية
   const formatCurrency = (amount) => {
-    const { locale: currencyLocale } = currencyFormats[validLocale] || currencyFormats.en;
+    const { locale: currencyLocale, currency } = currencyFormats[validLocale] || currencyFormats.en;
 
     // تنسيق العملة باستخدام Intl.NumberFormat
     const formattedAmount = new Intl.NumberFormat(currencyLocale, {
       style: "currency",
-      currency: currencyLocale === "ar-SA" ? "SAR" : "USD",
+      currency,
     }).format(amount);
 
     // استبدال الأرقام العربية بالأرقام الغربية

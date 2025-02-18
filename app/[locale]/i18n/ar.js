@@ -112,4 +112,34 @@ export default {
     title: "إدارة الطلبات",
     description: "هنا يمكنك مراجعة الطلبات وإدارتها.",
   },
+  admin: {
+    products: {
+      title: 'إدارة المنتجات',
+      description: 'يمكنك إضافة أو تعديل أو حذف المنتجات من هنا.',
+      addProduct: 'إضافة منتج جديد',
+      list: 'قائمة المنتجات',
+      editProduct: 'تعديل المنتج',
+      confirmDelete: 'هل أنت متأكد من حذف هذا المنتج؟',
+      form: {
+        name: 'اسم المنتج',
+        description: 'وصف المنتج',
+        price: 'سعر المنتج',
+        imageUrl: 'رابط الصورة',
+        submit: 'إضافة المنتج',
+        update: 'تحديث المنتج',
+        cancel: 'إلغاء',
+      },
+      table: {
+        name: 'الاسم',
+        description: 'الوصف',
+        price: 'السعر',
+        image: 'الصورة',
+        actions: 'الإجراءات',
+      },
+      actions: {
+        edit: 'تعديل',
+        delete: 'حذف',
+      },
+    },
+  },
 };
