@@ -67,7 +67,7 @@ export default function FeaturedProducts({ locale }: { locale: string }) {
 
         {/* Display Products */}
         {!loading && !error && products.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" >
             {products.map((product) => (
               <ProductCard key={product.id} product={product} locale={""} onAddToCart={function (product: any): void {
                     throw new Error("Function not implemented.");
