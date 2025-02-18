@@ -18,14 +18,13 @@ export default function ProductCard({
     onAddToCart(product); // ✅ إضافة المنتج إلى السلة
     toast.success(locale === 'ar' ? 'تمت إضافة المنتج إلى السلة' : 'Product added to cart');
   };
-  console.log('Product:', product); // ✅ تسجيل البيانات للتحقق منها
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
       {/* صورة المنتج */}
       <div className="aspect-w-16 aspect-h-9 relative">
         <Image
-          src={product.image || "/default-product-image.jpg"}
+          src={product.imageUrl || "/default-product-image.jpg"}
           alt={product.name}
           fill
           className="object-cover"
