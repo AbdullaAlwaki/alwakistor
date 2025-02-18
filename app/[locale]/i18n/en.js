@@ -66,7 +66,7 @@ export default {
       "Thank you for your purchase. Your order will be delivered soon.",
     goBack: "Go back to the home page",
   },
- 
+
   login: {
     title: "Login",
     email: "Email",
@@ -108,8 +108,9 @@ export default {
     goBack: "Go back to the home page",
   },
   products: {
-    title: "Manage Products",
-    description: "Here you can add, edit, or delete products.",
+    title: 'Products',
+    noDescription: 'No description available for this product.',
+    error: 'An error occurred while fetching products.',
   },
   orders: {
     title: "Manage Orders",

@@ -7,7 +7,7 @@ export async function GET() {
   try {
     // جلب جميع المنتجات من قاعدة البيانات
     const products = await prisma.product.findMany({
-      orderBy: { createdAt: 'desc' }, // ترتيب المنتجات حسب تاريخ الإنشاء (الأحدث أولاً)
+      orderBy: { id: 'desc' }, // ترتيب المنتجات حسب معرف المنتج (الأحدث أولاً)
     });
 
     // التحقق مما إذا كانت المنتجات موجودة

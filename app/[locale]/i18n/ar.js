@@ -63,7 +63,7 @@ export default {
     description: "شكرًا لك على الشراء. سيتم تسليم طلبك قريبًا.",
     goBack: "العودة إلى الصفحة الرئيسية",
   },
-    login: {
+  login: {
     title: "تسجيل الدخول",
     email: "البريد الإلكتروني",
     password: "كلمة المرور",
@@ -82,27 +82,31 @@ export default {
     success: "تم إنشاء الحساب بنجاح!",
     error: "حدث خطأ أثناء إنشاء الحساب.",
     loginLink: "هل لديك حساب؟ تسجيل الدخول",
-  },  dashboard: {
+  },
+  dashboard: {
     title: "لوحة تحكم المسؤول",
     manageProducts: "إدارة المنتجات",
     manageOrders: "إدارة الطلبات",
     goBack: "العودة إلى الصفحة الرئيسية",
-  },  forgotPassword: {
+  },
+  forgotPassword: {
     title: "استعادة كلمة المرور",
     email: "البريد الإلكتروني",
     submit: "إرسال رابط الاستعادة",
     success: "تم إرسال رابط استعادة كلمة المرور إلى بريدك الإلكتروني",
     error: "حدث خطأ أثناء إرسال الرابط",
     loginLink: "هل تتذكر كلمة المرور؟ تسجيل الدخول",
-  },  dashboard: {
+  },
+  dashboard: {
     title: "لوحة تحكم المسؤول",
     manageProducts: "إدارة المنتجات",
     manageOrders: "إدارة الطلبات",
     goBack: "العودة إلى الصفحة الرئيسية",
   },
   products: {
-    title: "إدارة المنتجات",
-    description: "هنا يمكنك إضافة أو تعديل أو حذف المنتجات.",
+    title: 'المنتجات',
+    noDescription: 'لا يوجد وصف لهذا المنتج.',
+    error: 'حدث خطأ أثناء جلب المنتجات.',
   },
   orders: {
     title: "إدارة الطلبات",

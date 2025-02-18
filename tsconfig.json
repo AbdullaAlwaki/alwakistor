@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "ESNext",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "ESNext",
-    "moduleResolution": "bundler",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
@@ -18,8 +18,11 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist",
+    "rootDir": "./"
   },
-  "include": ["next-env.d.ts", "**/*.ts", ".next/types/**/*.ts", "seed.ts", "next-intl.config.js"],
+  "include": ["next-env.d.ts", "**/*.ts", ".next/types/**/*.ts", "seed.ts", "next-intl.config.js", "prisma/**/*.ts", "prisma/seed.js"],
   "exclude": ["node_modules"]
 }
