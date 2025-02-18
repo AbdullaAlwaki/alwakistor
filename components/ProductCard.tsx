@@ -1,6 +1,6 @@
 "use client"; // تحديد أن هذا المكون هو Client Component
 
-import Image from 'next/image'; // ✅ استخدام next/image لتحسين الصور
+import Image from 'next/image'; 
 import React from 'react';
 import { toast } from 'react-toastify'; // ✅ إضافة التنبيهات
 import 'react-toastify/dist/ReactToastify.css';
@@ -23,10 +23,9 @@ export default function ProductCard({
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
       {/* صورة المنتج */}
       <div className="aspect-w-16 aspect-h-9 relative">
-        <Image
+        <img
           src={product.imageUrl || "/default-product-image.jpg"}
           alt={product.name}
-          fill
           className="object-cover"
         />
       </div>

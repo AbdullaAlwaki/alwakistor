@@ -14,28 +14,31 @@ export default function FeaturedProducts({ locale }: { locale: string }) {
     async function fetchFeaturedProducts() {
       try {
         const response = await fetch("/api/future-products"); // API endpoint for featured products
-
         // Check if the response is successful
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.message || "Failed to fetch featured products.");
         }
-
         const data = await response.json();
 
-        // Ensure the data is an array
+        // Ensure the data is an array and add unique keys if necessary
         if (!Array.isArray(data.data)) {
           throw new Error("Unexpected data format.");
         }
 
-        setProducts(data.data); // Update the products state
+        // Format products to ensure each has a unique key
+        const formattedProducts = data.data.map((product: { id: any; }, index: any) => ({
+          ...product,
+          id: product.id || `product-${index}`, // ✅ Add a unique key if `id` is missing
+        }));
+
+        setProducts(formattedProducts); // Update the products state
       } catch (e) {
         setError(e instanceof Error ? e.message : t("products.error"));
       } finally {
         setLoading(false);
       }
     }
-
     fetchFeaturedProducts();
   }, [locale]);
 
@@ -67,11 +70,16 @@ export default function FeaturedProducts({ locale }: { locale: string }) {
 
         {/* Display Products */}
         {!loading && !error && products.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} locale={""} onAddToCart={function (product: any): void {
-                    throw new Error("Function not implemented.");
-                } } />
+              <ProductCard
+                key={product.id} // ✅ Use the unique `id` as the key
+                product={product}
+                locale={locale}
+                onAddToCart={(product) => {
+                  console.log("Product added to cart:", product);
+                }}
+              />
             ))}
           </div>
         )}
