@@ -51,7 +51,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   try {
     await dbConnect(); // الاتصال بـ MongoDB
-    const { id } = params;
+    const  id  = params;
     const body = await request.json();
     const { name, description, price, imageUrl } = body;
     // تحديث المنتج

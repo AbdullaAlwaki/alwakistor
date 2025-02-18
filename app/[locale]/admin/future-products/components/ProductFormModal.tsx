@@ -1,123 +1,106 @@
+"use client";
 import React, { useState } from "react";
 
-interface Props {
+interface ProductFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (formData: any) => void;
-  product?: any;
+  onSubmit: (formData: any) => void; // استقبال دالة الإرسال مع بيانات النموذج
+  product: any; // المنتج المراد تعديله أو إضافته
   isEditing: boolean;
-  t: any;
+  t: any; // ترجمة
 }
 
-export default function ProductFormModal({ isOpen, onClose, onSubmit, product, isEditing, t }: Props) {
+export default function ProductFormModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  product: initialProduct,
+  isEditing,
+  t,
+}: ProductFormModalProps) {
+  if (!isOpen) return null;
+
+  // إدارة حالة النموذج باستخدام React State
   const [formData, setFormData] = useState({
-    name: product?.name || "",
-    description: product?.description || "",
-    price: product?.price || 0,
-    imageUrl: product?.imageUrl || "",
-    releaseDate: product?.releaseDate || "", // ✅ إضافة حقل تاريخ الإصدار
+    name: initialProduct?.name || "",
+    description: initialProduct?.description || "",
+    price: initialProduct?.price || 0,
+    imageUrl: initialProduct?.imageUrl || "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  // تحديث الحقول عند تغيير القيم
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: name === "price" ? parseFloat(value) : value,
+    }));
   };
 
+  // إرسال النموذج
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.price || !formData.releaseDate) {
-      alert(t('admin.futureProducts.validationError')); // ✅ رسالة خطأ عند عدم إدخال الحقول المطلوبة
-      return;
-    }
-    onSubmit(formData);
-    onClose();
+    onSubmit(formData); // إرسال البيانات إلى الوالد
   };
-
-  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">
+      <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-96">
+        <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">
           {isEditing ? t('admin.products.editProduct') : t('admin.products.addProduct')}
         </h2>
-        <form onSubmit={handleSubmit}>
-          {/* اسم المنتج */}
-          <div className="mb-4">
-            <label className="block text-gray-700 dark:text-gray-300">{t('admin.products.table.name')}</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-          </div>
-
-          {/* الوصف */}
-          <div className="mb-4">
-            <label className="block text-gray-700 dark:text-gray-300">{t('admin.products.table.description')}</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
-            />
-          </div>
-
-          {/* السعر */}
-          <div className="mb-4">
-            <label className="block text-gray-700 dark:text-gray-300">{t('admin.products.table.price')}</label>
-            <input
-              type="number"
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-          </div>
-
-          {/* رابط الصورة */}
-          <div className="mb-4">
-            <label className="block text-gray-700 dark:text-gray-300">{t('admin.products.table.imageUrl')}</label>
-            <input
-              type="url"
-              name="imageUrl"
-              value={formData.imageUrl}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
-            />
-          </div>
-
-          {/* تاريخ الإصدار */}
-          <div className="mb-4">
-            <label className="block text-gray-700 dark:text-gray-300">{t('admin.futureProducts.table.releaseDate')}</label>
-            <input
-              type="date"
-              name="releaseDate"
-              value={formData.releaseDate}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-          </div>
-
-          {/* زر الإرسال */}
-          <div className="flex justify-end space-x-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg"
-            >
-              {t('admin.products.cancel')}
-            </button>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* حقل الاسم */}
+          <input
+            type="text"
+            name="name"
+            placeholder={t('admin.products.form.name')}
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full p-2 border rounded bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 focus:border-gray-500 focus:ring-gray-500"
+            required
+          />
+          {/* حقل الوصف */}
+          <input
+            type="text"
+            name="description"
+            placeholder={t('admin.products.form.description')}
+            value={formData.description}
+            onChange={handleChange}
+            className="w-full p-2 border rounded bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 focus:border-gray-500 focus:ring-gray-500"
+          />
+          {/* حقل السعر */}
+          <input
+            type="number"
+            name="price"
+            placeholder={t('admin.products.form.price')}
+            value={formData.price}
+            onChange={handleChange}
+            className="w-full p-2 border rounded bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 focus:border-gray-500 focus:ring-gray-500"
+            required
+          />
+          {/* حقل رابط الصورة */}
+          <input
+            type="text"
+            name="imageUrl"
+            placeholder={t('admin.products.form.imageUrl')}
+            value={formData.imageUrl}
+            onChange={handleChange}
+            className="w-full p-2 border rounded bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 focus:border-gray-500 focus:ring-gray-500"
+          />
+          {/* أزرار الإرسال والإلغاء */}
+          <div className="flex justify-end space-x-2">
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
             >
-              {isEditing ? t('admin.products.update') : t('admin.products.add')}
+              {isEditing ? t('admin.products.form.update') : t('admin.products.form.submit')}
+            </button>
+            <button
+              onClick={onClose}
+              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+            >
+              {t('admin.products.form.cancel')}
             </button>
           </div>
         </form>
