@@ -1,59 +1,63 @@
 "use client"; // ✅ تحديد أن هذا المكون هو Client Component
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslation } from "../../[locale]/useTranslation";
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-
-export default function VerifyEmailPage() {
-  const [message, setMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(true); // ✅ إضافة حالة التحميل
+export default function VerifyEmailPage({ params }: { params: Promise<{ locale: string }> }) {
+  const [locale, setLocale] = useState<string>("en");
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation(locale);
   const router = useRouter();
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-    const email = urlParams.get('email');
+    if (params) {
+      params.then((unwrappedParams) => {
+        setLocale(unwrappedParams.locale);
+      });
+    }
 
-    // التحقق من وجود الرمز والبريد الإلكتروني
+    // استخراج token و email من عنوان URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token")?.trim(); // ✅ إزالة المسافات الزائدة
+    const email = urlParams.get("email")?.trim(); // ✅ إزالة المسافات الزائدة
+
+    console.log("Extracted Token:", token); // ✅ تسجيل الـ token للتحقق منه
+    console.log("Extracted Email:", email); // ✅ تسجيل البريد الإلكتروني للتحقق منه
+
     if (!token || !email) {
-      setMessage('رابط التأكيد غير صالح.');
-      setIsLoading(false); // ✅ تحديث حالة التحميل
+      setError(t("verify.invalidLink")); // ✅ عرض رسالة الخطأ إذا كان الرابط غير صالح
       return;
     }
 
-    // التحقق من صحة الرمز
-    fetch('/api/auth/verify-email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, email }),
-    })
+    // التحقق من صلاحية الرابط باستخدام نقطة النهاية
+    fetch(`/api/auth/verify-email?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}`)
       .then((res) => res.json())
       .then((data) => {
-        if (data.success) {
-          setMessage('تم تأكيد بريدك الإلكتروني بنجاح.');
-          setTimeout(() => {
-            router.push('/login'); // إعادة التوجيه إلى صفحة تسجيل الدخول
-          }, 2000); // انتظار 2 ثانية قبل إعادة التوجيه
+        console.log("API Response:", data); // ✅ تسجيل استجابة API للتحقق منها
+        if (data.error) {
+          setError(data.error); // ✅ عرض رسالة الخطأ إذا كانت هناك مشكلة
         } else {
-          setMessage(data.message || 'حدث خطأ أثناء تأكيد البريد الإلكتروني.');
+          setMessage(data.message); // ✅ عرض رسالة النجاح
+          setTimeout(() => {
+            router.push(`/${locale}/login`); // ✅ إعادة التوجيه إلى تسجيل الدخول بعد التأكيد
+          }, 3000); // انتظار 3 ثوانٍ قبل إعادة التوجيه
         }
       })
-      .catch(() => {
-        setMessage('حدث خطأ أثناء تأكيد البريد الإلكتروني.');
-      })
-      .finally(() => {
-        setIsLoading(false); // ✅ تحديث حالة التحميل بعد انتهاء العملية
+      .catch((err) => {
+        console.error("Fetch Error:", err); // ✅ تسجيل خطأ الطلب
+        setError(t("verify.error")); // ✅ عرض رسالة الخطأ العامة
       });
-  }, []);
+  }, [params]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-      <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md text-center space-y-4">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">تأكيد البريد الإلكتروني</h1>
-        {isLoading ? (
-          <p className="text-primary-500">جارٍ التحقق من رابط التأكيد...</p> // ✅ عرض رسالة التحميل
-        ) : (
-          <p className={message.includes('نجاح') ? 'text-green-500' : 'text-red-500'}>{message}</p>
-        )}
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md space-y-6 text-center">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+          {t("verify.title")}
+        </h1>
+        {message && <p className="text-green-500 text-sm">{message}</p>}
+        {error && <p className="text-red-500 text-sm">{error}</p>}
       </div>
     </div>
   );

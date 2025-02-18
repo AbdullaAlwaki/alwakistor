@@ -1,15 +1,16 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-// واجهة TypeScript لتحديد بنية المنتج
-export interface IProduct extends Document {
+// واجهة TypeScript لتحديد بنية المنتج المستقبلي
+export interface IFutureProduct extends Document {
   name: string;
   description: string;
   price: number;
   imageUrl: string;
+  releaseDate: Date; // ✅ تاريخ الإصدار
 }
 
-// تعريف مخطط المنتج
-const ProductSchema: Schema = new Schema(
+// تعريف مخطط المنتج المستقبلي
+const FutureProductSchema: Schema = new Schema(
   {
     name: {
       type: String,
@@ -27,6 +28,10 @@ const ProductSchema: Schema = new Schema(
       type: String,
       required: true,
     },
+    releaseDate: {
+      type: Date,
+      required: true,
+    },
   },
   {
     timestamps: true, // ✅ إضافة خاصية الوقت (createdAt, updatedAt)
@@ -34,5 +39,5 @@ const ProductSchema: Schema = new Schema(
 );
 
 // تصدير النموذج
-const Product = mongoose.models.Product || mongoose.model<IProduct>("Product", ProductSchema);
-export default Product;
+const FutureProduct = mongoose.models.FutureProduct || mongoose.model<IFutureProduct>("FutureProduct", FutureProductSchema);
+export default FutureProduct;

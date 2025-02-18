@@ -1,23 +1,29 @@
-"use client"; // ✅ تحديد أن هذا المكون هو Client Component
-
-import Link from 'next/link';
-import { ShoppingCart, CheckCircle, PackageSearch, User, LogIn } from 'lucide-react';
-import { useCart } from '../context/CartContext'; // ✅ استيراد Hook للسلة
-import { useTranslation } from '../app/[locale]/useTranslation'; // ✅ استيراد الترجمة
-import { useContext } from 'react';
-import { DarkModeContext } from '../context/DarkModeContext'; // ✅ استيراد سياق الوضع المظلم
-import { useAuth } from '../context/AuthContext'; // ✅ استيراد سياق تسجيل الدخول
-import React from 'react';
+import React, { useState } from "react";
+import Link from "next/link";
+import { ShoppingCart, PackageSearch, User, LogIn } from "lucide-react";
+import { useCart } from "../context/CartContext";
+import { useTranslation } from "../app/[locale]/useTranslation";
+import { useContext } from "react";
+import { DarkModeContext } from "../context/DarkModeContext";
+import { useAuth } from "../context/AuthContext";
 
 interface NavbarProps {
-  locale: string; // ✅ إضافة locale كخاصية
+  locale: string;
 }
 
 export default function GeneralNavbar({ locale }: NavbarProps) {
-  const { cartItems } = useCart(); // ✅ استخدام useCart للحصول على عناصر السلة
-  const { t } = useTranslation(locale); // ✅ استخدام الترجمة
-  const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext); // ✅ استخدام سياق الوضع المظلم
-  const { isAuthenticated } = useAuth(); // ✅ استخدام سياق تسجيل الدخول
+  const { cartItems } = useCart();
+  const { t } = useTranslation(locale);
+  const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext);
+  const { isAuthenticated } = useAuth();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      window.location.href = `/${locale}/products?search=${encodeURIComponent(searchQuery)}`;
+    }
+  };
 
   return (
     <>
@@ -31,12 +37,14 @@ export default function GeneralNavbar({ locale }: NavbarProps) {
         </div>
         <div className="flex gap-6 items-center">
           {/* شريط البحث */}
-          <form className="relative">
+          <form onSubmit={handleSearch} className="relative">
             <input
               type="text"
-              placeholder={t('navbar.searchPlaceholder')}
+              placeholder={t("navbar.searchPlaceholder")}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className={`w-64 p-2 border rounded ${
-                isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-800'
+                isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-gray-800"
               } focus:outline-none focus:ring-2 focus:ring-accent`}
             />
             <button type="submit" className="absolute right-2 top-1/2 transform -translate-y-1/2">
@@ -53,34 +61,34 @@ export default function GeneralNavbar({ locale }: NavbarProps) {
             </button>
           </form>
           {/* الروابط الأخرى */}
+          <Link href={`/${locale}/products`} className="text-foreground hover:text-accent flex items-center gap-1">
+            <PackageSearch size={20} />
+            <span>{t("navbar.products")}</span>
+          </Link>
           <Link href={`/${locale}/cart`} className="text-foreground hover:text-accent flex items-center gap-1">
             <ShoppingCart size={20} />
-            <span>{t('navbar.cart')}</span>
+            <span>{t("navbar.cart")}</span>
             {cartItems.length > 0 && <span>({cartItems.length})</span>}
-          </Link>
-          <Link href={`/${locale}/checkout`} className="text-foreground hover:text-accent flex items-center gap-1">
-            <CheckCircle size={20} />
-            <span>{t('navbar.checkout')}</span>
           </Link>
           {/* رابط Profile أو Sign In بناءً على حالة تسجيل الدخول */}
           {isAuthenticated ? (
             <Link href={`/${locale}/profile`} className="text-foreground hover:text-accent flex items-center gap-1">
               <User size={20} />
-              <span>{t('navbar.profile')}</span>
+              <span>{t("navbar.profile")}</span>
             </Link>
           ) : (
             <Link href={`/${locale}/login`} className="text-foreground hover:text-accent flex items-center gap-1">
               <LogIn size={20} />
-              <span>{t('navbar.signIn')}</span> {/* ✅ تغيير اسم الرابط إلى "Sign In" */}
+              <span>{t("navbar.signIn")}</span>
             </Link>
           )}
           {/* تبديل اللغة */}
-          <Link href={`/${locale === 'ar' ? 'en' : 'ar'}`} className="text-foreground hover:text-accent">
-            {locale === 'ar' ? 'English' : 'العربية'}
+          <Link href={`/${locale === "ar" ? "en" : "ar"}`} className="text-foreground hover:text-accent">
+            {locale === "ar" ? "English" : "العربية"}
           </Link>
           {/* زر تبديل الوضع المظلم */}
           <button onClick={toggleDarkMode} className="text-foreground hover:text-accent">
-            {isDarkMode ? t('navbar.lightMode') : t('navbar.darkMode')}
+            {isDarkMode ? t("navbar.lightMode") : t("navbar.darkMode")}
           </button>
         </div>
       </nav>
@@ -89,32 +97,32 @@ export default function GeneralNavbar({ locale }: NavbarProps) {
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-background shadow-md p-2 flex justify-around items-center h-20">
         <Link href={`/${locale}`} className="text-foreground hover:text-accent flex flex-col items-center">
           <PackageSearch size={24} />
-          <span className="text-xs">{t('navbar.home')}</span>
+          <span className="text-xs">{t("navbar.home")}</span>
+        </Link>
+        <Link href={`/${locale}/products`} className="text-foreground hover:text-accent flex flex-col items-center">
+          <PackageSearch size={24} />
+          <span className="text-xs">{t("navbar.products")}</span>
         </Link>
         <Link href={`/${locale}/cart`} className="text-foreground hover:text-accent flex flex-col items-center">
           <ShoppingCart size={24} />
-          <span className="text-xs">{t('navbar.cart')}</span>
+          <span className="text-xs">{t("navbar.cart")}</span>
           {cartItems.length > 0 && <span>({cartItems.length})</span>}
-        </Link>
-        <Link href={`/${locale}/checkout`} className="text-foreground hover:text-accent flex flex-col items-center">
-          <CheckCircle size={24} />
-          <span className="text-xs">{t('navbar.checkout')}</span>
         </Link>
         {/* رابط Profile أو Sign In بناءً على حالة تسجيل الدخول */}
         {isAuthenticated ? (
           <Link href={`/${locale}/profile`} className="text-foreground hover:text-accent flex flex-col items-center">
             <User size={24} />
-            <span className="text-xs">{t('navbar.profile')}</span>
+            <span className="text-xs">{t("navbar.profile")}</span>
           </Link>
         ) : (
           <Link href={`/${locale}/login`} className="text-foreground hover:text-accent flex flex-col items-center">
             <LogIn size={24} />
-            <span className="text-xs">{t('navbar.signIn')}</span> {/* ✅ تغيير اسم الرابط إلى "Sign In" */}
+            <span className="text-xs">{t("navbar.signIn")}</span>
           </Link>
         )}
         {/* زر تبديل الوضع المظلم للهواتف */}
         <button onClick={toggleDarkMode} className="text-foreground hover:text-accent flex flex-col items-center">
-          <span className="text-xs">{isDarkMode ? t('navbar.lightMode') : t('navbar.darkMode')}</span>
+          <span className="text-xs">{isDarkMode ? t("navbar.lightMode") : t("navbar.darkMode")}</span>
         </button>
       </nav>
     </>

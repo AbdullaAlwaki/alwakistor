@@ -1,9 +1,18 @@
+import { verify } from "crypto";
+
 export default {
   home: {
     welcome: "مرحبًا بك في Alwaki Store",
     description: "تسوق أفضل المنتجات بأفضل الأسعار.",
     price: "السعر",
     noProducts: "لا توجد منتجات متاحة.",
+    featuredProducts: "المنتجات المميزة",
+    hero: {
+      title: "تسوق الآن",
+      description: "احصل على أفضل العروض اليوم!",
+      subtitle : "تسوق الآن",
+      buttonText: "تسوق الآن",
+    },
   },
   cart: {
     title: "عربة التسوق",
@@ -40,13 +49,12 @@ export default {
   navbar: {
     home: "الرئيسية",
     cart: "السلة",
-    checkout: "إكمال الطلب",
-    trackOrder: "تتبع الطلب",
     profile: "الصفحة الشخصية", // إضافة هذه الترجمة
     lightMode: "الوضع الفاتح",
     darkMode: "الوضع المظلم",
     signIn: "تسجيل الدخول",
     searchPlaceholder: "ابحث عن منتج...",
+    products: "المنتجات",
   },
   profile: {
     title: "البروفايل",
@@ -71,6 +79,9 @@ export default {
     forgotPassword: "نسيت كلمة المرور؟",
     loading: "جارٍ التحميل...",
     error: "حدث خطأ أثناء تسجيل الدخول",
+    signUp : "إنشاء حساب جديد",
+    success: "تم تسجيل الدخول بنجاح!",
+    invalidCredentials: "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
   },
   signup: {
     title: "إنشاء حساب",
@@ -82,6 +93,8 @@ export default {
     success: "تم إنشاء الحساب بنجاح!",
     error: "حدث خطأ أثناء إنشاء الحساب.",
     loginLink: "هل لديك حساب؟ تسجيل الدخول",
+    invalidEmail: "البريد الإلكتروني غير صالح.",
+    shortPassword: "يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل.",
   },
   dashboard: {
     title: "لوحة تحكم المسؤول",
@@ -107,6 +120,7 @@ export default {
     title: 'المنتجات',
     noDescription: 'لا يوجد وصف لهذا المنتج.',
     error: 'حدث خطأ أثناء جلب المنتجات.',
+    noProductsAvailable: 'لا توجد منتجات متاحة.',
   },
   orders: {
     title: "إدارة الطلبات",
@@ -120,6 +134,11 @@ export default {
       list: 'قائمة المنتجات',
       editProduct: 'تعديل المنتج',
       confirmDelete: 'هل أنت متأكد من حذف هذا المنتج؟',
+      futureProducts: 'المنتجات القادمة',
+      currentProducts: 'المنتجات الحالية',
+      noProducts: 'لا توجد منتجات.',
+      delete : 'حذف',
+      edit : 'تعديل',
       form: {
         name: 'اسم المنتج',
         description: 'وصف المنتج',
@@ -141,5 +160,27 @@ export default {
         delete: 'حذف',
       },
     },
+
+  futureProducts: {
+    title: "إدارة المنتجات المستقبلية",
+    description: "يمكنك هنا إدارة جميع المنتجات المستقبلية.",
+    addProduct: "إضافة منتج مستقبلي جديد",
+    noProducts: "لا توجد منتجات مستقبلية متاحة.",
+    table: {
+      name: "الاسم",
+      description: "الوصف",
+      price: "السعر",
+      releaseDate: "تاريخ الإصدار",
+      actions: "الإجراءات"
+    },
+    edit: "تعديل",
+    delete: "حذف"
+  },
+},
+  verify: {
+    title: "تحقق من البريد الإلكتروني",
+    success: "تم التحقق من البريد الإلكتروني بنجاح!",
+    error: "حدث خطأ أثناء التحقق من البريد الإلكتروني.",
+    invalidLink: "رابط التحقق غير صالح.",
   },
 };

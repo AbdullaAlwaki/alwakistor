@@ -49,6 +49,8 @@ export default {
     darkMode: "Dark Mode",
     signIn: "Sign In",
     searchPlaceholder: "Search for a product...",
+    products: "Products",
+    admin: "Admin",
   },
   profile: {
     title: "Profile",
@@ -75,6 +77,9 @@ export default {
     forgotPassword: "Forgot Password?",
     loading: "Loading...",
     error: "An error occurred while logging in.",
+    signUp: "Create a new account here",
+    invalidCredentials: "Invalid email or password.",
+    success : "Logged in successfully!",
   },
   signup: {
     title: "Sign Up",
@@ -86,6 +91,8 @@ export default {
     success: "Account created successfully!",
     error: "An error occurred while creating the account.",
     loginLink: "Already have an account? Sign In",
+    invalidEmail: "Invalid email address.",
+    invalidPassword: "Password must be at least 6 characters long.",
   },
   dashboard: {
     title: "Admin Dashboard",
@@ -111,6 +118,7 @@ export default {
     title: 'Products',
     noDescription: 'No description available for this product.',
     error: 'An error occurred while fetching products.',
+    noProductsAvailable: 'No products available.',
   },
   orders: {
     title: "Manage Orders",
@@ -124,6 +132,9 @@ export default {
       list: 'Products List',
       editProduct: 'Edit Product',
       confirmDelete: 'Are you sure you want to delete this product?',
+      noProducts: 'No products available.',
+      delete : 'Delete',
+      edit : 'Edit',
       form: {
         name: 'Product Name',
         description: 'Product Description',
@@ -145,5 +156,20 @@ export default {
         delete: 'Delete',
       },
     },
+  futureProducts: {
+    title: "Manage Future Products",
+    description: "Here you can manage all future products.",
+    addProduct: "Add New Future Product",
+    noProducts: "No future products available.",
+    table: {
+      name: "Name",
+      description: "Description",
+      price: "Price",
+      releaseDate: "Release Date",
+      actions: "Actions",
+    },
+    edit: "Edit",
+    delete: "Delete",
+  },
   },
 };
