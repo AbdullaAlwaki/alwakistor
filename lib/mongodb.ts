@@ -6,6 +6,7 @@ if (!MONGODB_URI) {
   throw new Error('❌ Please define the MONGODB_URI environment variable inside .env.local');
 }
 
+
 // تعريف `global.mongoose` في TypeScript
 declare global {
   var mongoose: { conn: mongoose.Mongoose | null; promise: Promise<mongoose.Mongoose> | null };
