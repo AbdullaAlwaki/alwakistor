@@ -1,13 +1,18 @@
 "use client";
-
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from '../../[locale]/useTranslation';
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "../../[locale]/useTranslation";
+import { useSearchParams } from "next/navigation";
+import ProductCard from "../../../components/ProductCard";
 
 export default function ProductsPage({ params }: { params: Promise<{ locale: string }> }) {
-  const [locale, setLocale] = useState<string>('en');
+  const [locale, setLocale] = useState<string>("en");
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // استخدام useSearchParams للوصول إلى معلمات البحث
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("search") || ""; // ✅ جلب نص البحث من URL
   const { t } = useTranslation(locale);
 
   useEffect(() => {
@@ -17,57 +22,60 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
       });
     }
 
-    // جلب المنتجات من API
-    fetch('/api/products')
-      .then((res) => res.json())
-      .then((data) => {
+    // دالة لجلب المنتجات بناءً على الاستعلام
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/products?search=${encodeURIComponent(searchQuery)}`);
+        const data = await response.json();
+
         if (data.success) {
           setProducts(data.data);
         } else {
-          setError(data.message || t('products.error'));
+          setError(data.message || t("products.error"));
         }
-      })
-      .catch(() => {
-        setError(t('products.error'));
-      })
-      .finally(() => {
+      } catch (err) {
+        setError(t("products.error"));
+      } finally {
         setLoading(false);
-      });
-  }, [params]);
+      }
+    };
+
+    fetchProducts();
+  }, [params, searchQuery]); // ✅ إعادة الجلب عند تغيير searchQuery
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
-      <h1 className="text-3xl font-bold text-center mb-8">{t('products.title')}</h1>
-      {loading ? (
+      {/* عنوان الصفحة */}
+      <h1 className="text-3xl font-bold text-center mb-8">{t("products.title")}</h1>
+
+      {/* حالة التحميل */}
+      {loading && (
         <p className="text-center text-gray-500">جارٍ التحميل...</p>
-      ) : error ? (
+      )}
+
+      {/* حالة الخطأ */}
+      {error && !loading && (
         <p className="text-center text-red-500">{error}</p>
-      ) : products.length === 0 ? (
+      )}
+
+      {/* حالة عدم وجود منتجات */}
+      {!loading && !error && products.length === 0 && (
         <p className="text-center text-gray-500">لا توجد منتجات متاحة.</p>
-      ) : (
+      )}
+
+      {/* عرض المنتجات باستخدام ProductCard */}
+      {!loading && !error && products.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
-            <div
-              key={product.id} 
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden"
-            >
-              {product.imageUrl && (
-                <img
-                  src={product.imageUrl}
-                  alt={product.name}
-                  className="w-full h-48 object-cover"
-                />
-              )}
-              <div className="p-4">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-                  {product.name}
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 mt-2">
-                  {product.description || t('products.noDescription')}
-                </p>
-                <p className="text-green-500 font-bold mt-4">${product.price}</p>
-              </div>
-            </div>
+          {products.map((product, index) => (
+            <ProductCard
+              key={product.id || `product-${index}`} // ✅ إضافة مفتاح فريد لكل منتج
+              product={product}
+              locale={locale}
+              onAddToCart={(product) => {
+                console.log("Product added to cart:", product);
+              }}
+            />
           ))}
         </div>
       )}

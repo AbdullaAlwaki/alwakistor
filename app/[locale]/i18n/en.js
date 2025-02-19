@@ -11,6 +11,12 @@ export default {
       subtitle : "Shop Now",
       buttonText: "Shop Now",
     },
+    meta: {
+      title: "Alwaki Store - Shop the Best Products",
+      description: "Shop the best products at the best prices.",
+      subtitle: "Shop the best products at the best prices.",
+      buttonText: "Shop Now",
+    },
   },
   cart: {
     title: "Shopping Cart",

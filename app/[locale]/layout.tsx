@@ -47,7 +47,7 @@ export default function RootLayout({
         <meta name="description" content={t("home.meta.description")} />
         <meta property="og:title" content={t("home.meta.title")} />
         <meta property="og:description" content={t("home.meta.description")} />
-        <meta property="og:image" content="https://yourdomain.com/logo.png" />
+        <meta property="og:image" content="https://th.bing.com/th/id/OIP.QSvgc1_i2g9z01I966ybQgHaHa?rs=1&pid=ImgDetMain" />
         <meta property="og:url" content="https://alwakistor.vercel.app/ar" />
         <meta property="og:type" content="website" />
       </head>

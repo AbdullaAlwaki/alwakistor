@@ -32,7 +32,7 @@ export default function ProductCard({
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105 hover:shadow-lg">
       {/* صورة المنتج */}
-      <div className="aspect-w-16 aspect-h-9 relative">
+      <div className="w-full h-48 relative">
         <img
           src={product.imageUrl || "/default-product-image.jpg"}
           alt={product.name}
