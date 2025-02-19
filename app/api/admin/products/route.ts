@@ -1,96 +1,86 @@
 import dbConnect from '../../../../lib/mongodb';
 import Product from '../../../../models/Product';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-// الاتصال بقاعدة البيانات عند تشغيل أي طلب
+// 🟢 جلب جميع المنتجات
 export async function GET() {
   try {
-    await dbConnect(); // الاتصال بـ MongoDB
-    // جلب جميع المنتجات
+    await dbConnect();
     const products = await Product.find();
     return NextResponse.json({ success: true, data: products }, { status: 200 });
   } catch (error) {
     console.error('Error fetching products:', error);
-    // التحقق من نوع الخطأ وإرجاع رسالة مناسبة
-    if (error instanceof Error) {
-      return NextResponse.json({ success: false, message: error.message || 'Failed to fetch products.' }, { status: 500 });
-    }
-    return NextResponse.json({ success: false, message: 'An unexpected error occurred.' }, { status: 500 });
+    return NextResponse.json({ success: false, message: error instanceof Error ? error.message : 'An unexpected error occurred.' }, { status: 500 });
   }
 }
 
-// إضافة منتج جديد
-export async function POST(request: Request) {
+// 🟢 إضافة منتج جديد
+export async function POST(request: NextRequest) {
   try {
-    await dbConnect(); // الاتصال بـ MongoDB
+    await dbConnect();
     const body = await request.json();
     const { name, description, price, imageUrl } = body;
-    // التحقق من صحة البيانات
+
     if (!name || !price) {
       return NextResponse.json({ success: false, message: 'Name and price are required.' }, { status: 400 });
     }
-    // إنشاء منتج جديد
-    const product = await Product.create({
-      name,
-      description,
-      price,
-      imageUrl,
-    });
+
+    const product = await Product.create({ name, description, price, imageUrl });
     return NextResponse.json({ success: true, data: product }, { status: 201 });
   } catch (error) {
     console.error('Error creating product:', error);
-    // التحقق من نوع الخطأ وإرجاع رسالة مناسبة
-    if (error instanceof Error) {
-      return NextResponse.json({ success: false, message: error.message || 'Failed to create product.' }, { status: 500 });
-    }
-    return NextResponse.json({ success: false, message: 'An unexpected error occurred.' }, { status: 500 });
+    return NextResponse.json({ success: false, message: error instanceof Error ? error.message : 'An unexpected error occurred.' }, { status: 500 });
   }
 }
 
-// تعديل منتج موجود
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+// 🟢 تعديل منتج موجود
+export async function PUT(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
-    await dbConnect(); // الاتصال بـ MongoDB
-    const { id } = params;
+    await dbConnect();
+    const { id } = await context.params; // 🛠 Fix: Await params
+
+    if (!id) {
+      return NextResponse.json({ success: false, message: 'Invalid product ID.' }, { status: 400 });
+    }
+
     const body = await request.json();
     const { name, description, price, imageUrl } = body;
-    // تحديث المنتج
+
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
       { name, description, price, imageUrl },
-      { new: true } // لاسترجاع المنتج بعد التحديث
+      { new: true }
     );
+
     if (!updatedProduct) {
       return NextResponse.json({ success: false, message: 'Product not found.' }, { status: 404 });
     }
+
     return NextResponse.json({ success: true, data: updatedProduct }, { status: 200 });
   } catch (error) {
     console.error('Error updating product:', error);
-    // التحقق من نوع الخطأ وإرجاع رسالة مناسبة
-    if (error instanceof Error) {
-      return NextResponse.json({ success: false, message: error.message || 'Failed to update product.' }, { status: 500 });
-    }
-    return NextResponse.json({ success: false, message: 'An unexpected error occurred.' }, { status: 500 });
+    return NextResponse.json({ success: false, message: error instanceof Error ? error.message : 'An unexpected error occurred.' }, { status: 500 });
   }
 }
 
-// حذف منتج
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+// 🟢 حذف منتج
+export async function DELETE(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
-    await dbConnect(); // الاتصال بـ MongoDB
-    const { id } = params;
-    // حذف المنتج
+    await dbConnect();
+    const { id } = await context.params; // 🛠 Fix: Await params
+
+    if (!id) {
+      return NextResponse.json({ success: false, message: 'Invalid product ID.' }, { status: 400 });
+    }
+
     const deletedProduct = await Product.findByIdAndDelete(id);
     if (!deletedProduct) {
       return NextResponse.json({ success: false, message: 'Product not found.' }, { status: 404 });
     }
+
     return NextResponse.json({ success: true, message: 'Product deleted successfully.' }, { status: 200 });
   } catch (error) {
     console.error('Error deleting product:', error);
-    // التحقق من نوع الخطأ وإرجاع رسالة مناسبة
-    if (error instanceof Error) {
-      return NextResponse.json({ success: false, message: error.message || 'Failed to delete product.' }, { status: 500 });
-    }
-    return NextResponse.json({ success: false, message: 'An unexpected error occurred.' }, { status: 500 });
+    return NextResponse.json({ success: false, message: error instanceof Error ? error.message : 'An unexpected error occurred.' }, { status: 500 });
   }
 }
