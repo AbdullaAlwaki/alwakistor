@@ -13,6 +13,12 @@ export default {
       subtitle : "تسوق الآن",
       buttonText: "تسوق الآن",
     },
+    meta: {
+      title: "Alwaki Store - تسوق أفضل المنتجات",
+      description: "تسوق أفضل المنتجات بأفضل الأسعار.",
+      subtitle: "تسوق أفضل المنتجات بأفضل الأسعار.",
+      buttonText: "تسوق الآن",
+    },
   },
   cart: {
     title: "عربة التسوق",
@@ -55,6 +61,7 @@ export default {
     signIn: "تسجيل الدخول",
     searchPlaceholder: "ابحث عن منتج...",
     products: "المنتجات",
+    noResults : "لا توجد نتائج متطابقة",
   },
   profile: {
     title: "البروفايل",

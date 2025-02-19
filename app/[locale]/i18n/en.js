@@ -4,6 +4,13 @@ export default {
     description: "Shop the best products at the best prices.",
     price: "Price",
     noProducts: "No products available.",
+    featuredProducts: "Featured Products",
+    hero: {
+      title: "Shop Now",
+      description: "Get the best deals today!",
+      subtitle : "Shop Now",
+      buttonText: "Shop Now",
+    },
   },
   cart: {
     title: "Shopping Cart",
@@ -44,12 +51,13 @@ export default {
     cart: "Cart",
     checkout: "Checkout",
     trackOrder: "Track Order",
-    profile: "Profile", // إضافة هذه الترجمة
+    profile: "Profile",
     lightMode: "Light Mode",
     darkMode: "Dark Mode",
     signIn: "Sign In",
     searchPlaceholder: "Search for a product...",
     products: "Products",
+    noResults : "No matching results",
     admin: "Admin",
   },
   profile: {

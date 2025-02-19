@@ -14,7 +14,6 @@ export default function ManageFutureProducts({ params }: { params: Promise<{ loc
     description: "",
     price: 0,
     imageUrl: "",
-    releaseDate: "", // ✅ إضافة حقل تاريخ الإصدار
   });
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);

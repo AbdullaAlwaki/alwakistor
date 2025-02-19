@@ -33,7 +33,7 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [params]);
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
@@ -48,7 +48,7 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product) => (
             <div
-              key={product.id}
+              key={product.id} 
               className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden"
             >
               {product.imageUrl && (

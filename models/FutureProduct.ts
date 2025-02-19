@@ -6,7 +6,6 @@ export interface IFutureProduct extends Document {
   description: string;
   price: number;
   imageUrl: string;
-  releaseDate: Date; // ✅ تاريخ الإصدار
 }
 
 // تعريف مخطط المنتج المستقبلي
@@ -26,10 +25,6 @@ const FutureProductSchema: Schema = new Schema(
     },
     imageUrl: {
       type: String,
-      required: true,
-    },
-    releaseDate: {
-      type: Date,
       required: true,
     },
   },
