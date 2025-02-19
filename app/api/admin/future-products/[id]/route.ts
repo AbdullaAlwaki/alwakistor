@@ -3,8 +3,12 @@ import { NextResponse } from 'next/server';
 import dbConnect from '../../../../../lib/mongodb';
 import FutureProduct from '../../../../../models/FutureProduct';
 
+interface params {
+  id: string;
+}
+
 // الاتصال بقاعدة البيانات عند تشغيل أي طلب
-export async function PUT(request: Request, context: { params: { id: string } }) {
+export async function PUT(request: Request, context: { params: params }) {
   try {
     await dbConnect(); // الاتصال بـ MongoDB
 
