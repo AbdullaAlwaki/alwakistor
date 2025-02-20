@@ -1,114 +1,142 @@
-"use client"; // ✅ تحديد أن هذا المكون هو Client Component
+"use client"; // تحديد أن هذا المكون هو Client Component
 
+import { useRouter } from "next/navigation"; // استخدام next/navigation
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // ✅ استيراد useRouter
-import { useTranslation } from "../../[locale]/useTranslation";
-import { useContext } from "react";
-import { DarkModeContext } from "../../../context/DarkModeContext"; // استيراد DarkModeContext
+import { useAuth } from "../../../context/AuthContext";
+import { DarkModeContext } from "../../../context/DarkModeContext";
+import { LogIn, LogOut, Moon, Sun, Settings } from "lucide-react";
+import ReactCountryFlag from "react-country-flag";
+import { useTranslation } from "../useTranslation";
 
 export default function SettingsPage({ params }: { params: Promise<{ locale: string }> }) {
-  const [locale, setLocale] = useState<string>("en"); // ✅ حالة للغة
-  const [t, setT] = useState<(key: string) => string>((key: string) => key); // ✅ تحديد نوع المعلمة
-  const router = useRouter(); // ✅ استخدام useRouter
-  const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext); // استخدام DarkModeContext
+  const [locale, setLocale] = useState<string>("en"); // حالة للغة
+  const [t, setT] = useState<any>({}); // حالة مؤقتة للترجمة
+  const router = useRouter(); // استخدام useRouter من next/navigation
+
+  const { isAuthenticated, logout } = useAuth();
+  const { isDarkMode, toggleDarkMode } = React.useContext(DarkModeContext);
 
   // فك تغليف الـ params واستخدام useTranslation
   useEffect(() => {
-    if (params) {
-      params
-        .then((unwrappedParams) => {
-          if (unwrappedParams && unwrappedParams.locale) {
-            setLocale(unwrappedParams.locale); // تحديث الحالة
-          }
-        })
-        .catch((error) => {
-          console.error("Error resolving params:", error);
-        });
-    }
+    params
+      .then((unwrappedParams) => {
+        if (unwrappedParams && unwrappedParams.locale) {
+          const selectedLocale = unwrappedParams.locale;
+          setLocale(selectedLocale); // تحديث الحالة
+          localStorage.setItem("locale", selectedLocale); // تخزين اللغة في localStorage
+        } else {
+          // إذا لم يكن هناك locale في params، استخدم القيمة المخزنة في localStorage
+          const storedLocale = localStorage.getItem("locale") || "en";
+          setLocale(storedLocale);
+        }
+      })
+      .catch((error) => {
+        console.error("Error resolving params:", error);
+        // إذا حدث خطأ، استخدم القيمة المخزنة في localStorage أو الافتراضية
+        const storedLocale = localStorage.getItem("locale") || "en";
+        setLocale(storedLocale);
+      });
   }, [params]);
 
   // تحديث الترجمات عند تغيير locale
   useEffect(() => {
-    if (locale) {
-      const translations = useTranslation(locale);
-      setT(translations);
-    }
+    const translations = useTranslation(locale);
+    setT(translations);
   }, [locale]);
+
+  // دالة لتأكيد تسجيل الخروج
+  const handleLogout = () => {
+    if (confirm(t["settings.logoutConfirmation"] || "Are you sure?")) {
+      logout();
+    }
+  };
 
   // دالة لتغيير اللغة
   const handleLanguageChange = (newLocale: string) => {
     setLocale(newLocale); // تحديث الحالة
     localStorage.setItem("locale", newLocale); // تخزين اللغة الجديدة
-    const translations = useTranslation(newLocale);
-    setT(translations); // تحديث الترجمات
-    router.push(`/${newLocale}/settings`); // إعادة التوجيه باستخدام useRouter
+
+    // إعادة التوجيه إلى نفس الصفحة مع locale الجديد
+    router.push(`/${newLocale}/settings`);
   };
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'} flex items-center justify-center p-4`}>
-      <div
-        className={`${
-          isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'
-        } p-8 rounded-lg shadow-md w-full max-w-md space-y-6`}
-      >
-        {/* العنوان */}
-        <h1 className="text-3xl font-bold">{t('settings.title') || "Settings"}</h1>
+    <div className="max-w-lg mx-auto p-6 bg-white dark:bg-gray-900 rounded-lg shadow-md mt-10">
+      {/* العنوان */}
+      <h1 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">
+        {t["settings.title"] || "Settings"}
+      </h1>
 
-        {/* تبديل اللغة */}
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            {t('settings.language') || "Language"}
-          </label>
+      {/* تبديل اللغة */}
+      <div className="flex items-center justify-between p-4 border-b border-gray-300 dark:border-gray-700">
+        <span className="text-gray-800 dark:text-gray-200">
+          {t["settings.language"] || "Language"}
+        </span>
+        <button
+          onClick={() => handleLanguageChange(locale === "ar" ? "en" : "ar")}
+          className="flex items-center gap-2 text-primary-600 hover:underline"
+        >
+          {locale === "ar" ? (
+            <>
+              <ReactCountryFlag
+                countryCode="US"
+                svg
+                style={{ width: "1.5em", height: "1.5em" }}
+              />
+              English
+            </>
+          ) : (
+            <>
+              <ReactCountryFlag
+                countryCode="SA"
+                svg
+                style={{ width: "1.5em", height: "1.5em" }}
+              />
+              العربية
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* تبديل الوضع المظلم */}
+      <div className="flex items-center justify-between p-4 border-b border-gray-300 dark:border-gray-700">
+        <span className="text-gray-800 dark:text-gray-200">
+          {t["settings.darkMode"] || "Dark Mode"}
+        </span>
+        <button
+          onClick={toggleDarkMode}
+          className="flex items-center gap-2 bg-gray-200 dark:bg-gray-700 p-2 rounded-lg"
+        >
+          {isDarkMode ? <Moon size={20} /> : <Sun size={20} />}
+          {isDarkMode
+            ? t["settings.dark"] || "Dark"
+            : t["settings.light"] || "Light"}
+        </button>
+      </div>
+
+      {/* تسجيل الدخول / الخروج */}
+      <div className="flex items-center justify-between p-4 border-b border-gray-300 dark:border-gray-700">
+        <span className="text-gray-800 dark:text-gray-200">
+          {t["settings.account"] || "Account"}
+        </span>
+        {isAuthenticated ? (
           <button
-            onClick={() => handleLanguageChange(locale === "ar" ? "en" : "ar")}
-            className={`w-full px-4 py-2 rounded ${
-              isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-green-500`}
+            onClick={handleLogout}
+            className="flex items-center gap-2 text-red-600 hover:underline"
           >
-            {locale === "ar" ? (
-              <>
-                <span>English</span>
-              </>
-            ) : (
-              <>
-                <span>العربية</span>
-              </>
-            )}
+            <LogOut size={20} />
+            {t["settings.logout"] || "Logout"}
           </button>
-        </div>
-
-        {/* تبديل الوضع المظلم */}
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            {t('settings.darkMode') || "Dark Mode"}
-          </label>
-          <button
-            onClick={toggleDarkMode}
-            className={`w-full px-4 py-2 rounded ${
-              isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-green-500`}
-          >
-            {isDarkMode
-              ? t('settings.light') || "Light Mode"
-              : t('settings.dark') || "Dark Mode"}
-          </button>
-        </div>
-
-        {/* تسجيل الدخول / الخروج */}
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            {t('settings.account') || "Account"}
-          </label>
+        ) : (
           <Link
             href={`/${locale}/login`}
-            className={`w-full px-4 py-2 rounded block text-center ${
-              isDarkMode ? 'bg-blue-700 hover:bg-blue-600' : 'bg-blue-500 hover:bg-blue-600'
-            } text-white focus:outline-none focus:ring-2 focus:ring-green-500`}
+            className="flex items-center gap-2 text-primary-600 hover:underline"
           >
-            {t('settings.login') || "Login"}
+            <LogIn size={20} />
+            {t["settings.login"] || "Login"}
           </Link>
-        </div>
+        )}
       </div>
     </div>
   );
