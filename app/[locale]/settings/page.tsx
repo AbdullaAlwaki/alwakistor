@@ -9,7 +9,7 @@ import { DarkModeContext } from "../../../context/DarkModeContext"; // استي�
 
 export default function SettingsPage({ params }: { params: Promise<{ locale: string }> }) {
   const [locale, setLocale] = useState<string>("en"); // ✅ حالة للغة
-  const [t, setT] = useState<any>({}); // ✅ حالة مؤقتة للترجمة
+  const [t, setT] = useState<any>((key) => key); // ✅ حالة مؤقتة للترجمة
   const router = useRouter(); // ✅ استخدام useRouter
   const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext); // استخدام DarkModeContext
 
