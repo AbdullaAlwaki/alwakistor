@@ -5,7 +5,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { DarkModeContext } from "../../../context/DarkModeContext";
 import { LogIn, LogOut, Moon, Sun, Settings } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
-import { useTranslation } from "../../[locale]/useTranslation";
+import { useTranslation } from "../useTranslation";
 
 export default function SettingsPage({ params }: { params: Promise<{ locale: string }> }) {
   const [locale, setLocale] = useState<string>("en"); // ✅ حالة للغة
