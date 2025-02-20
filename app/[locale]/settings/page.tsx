@@ -5,27 +5,22 @@ import { useAuth } from "../../../context/AuthContext";
 import { DarkModeContext } from "../../../context/DarkModeContext";
 import { LogIn, LogOut, Moon, Sun, Settings } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
+import { useTranslation } from "../../[locale]/useTranslation";
 
-export default function SettingsPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>; // ✅ تعريف الـ params كـ Promise
-}) {
+export default function SettingsPage({ params }: { params: Promise<{ locale: string }> }) {
   const [locale, setLocale] = useState<string>("en"); // ✅ حالة للغة
   const { isAuthenticated, logout } = useAuth();
   const { isDarkMode, toggleDarkMode } = React.useContext(DarkModeContext);
+
+  // فك تغليف الـ params واستخدام useTranslation
   const [t, setT] = useState<any>((key: string) => key); // ✅ حالة مؤقتة للترجمة
 
   useEffect(() => {
     // فك تغليف الـ params باستخدام then
     params.then((unwrappedParams) => {
       setLocale(unwrappedParams.locale); // ✅ تحديث اللغة
-      // تحديث الترجمة بناءً على اللغة الجديدة
-      import(`../i18n/${unwrappedParams.locale}.js`).then(
-        (translations) => {
-          setT((key: string) => translations.default[key] || key);
-        }
-      );
+      const translations = useTranslation(unwrappedParams.locale); // ✅ استخدام useTranslation
+      setT(translations);
     });
   }, [params]);
 
