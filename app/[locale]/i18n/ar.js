@@ -64,6 +64,7 @@ export default {
     products: "المنتجات",
     noResults : "لا توجد نتائج متطابقة",
     settings: "الإعدادات",
+    search: "بحث",
   },
   profile: {
     title: "البروفايل",

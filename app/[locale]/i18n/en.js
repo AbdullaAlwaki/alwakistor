@@ -66,6 +66,7 @@ export default {
     noResults : "No matching results",
     admin: "Admin",
     settings: "Settings",
+    search: "Search",
   },
   profile: {
     title: "Profile",
