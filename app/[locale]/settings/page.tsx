@@ -1,16 +1,34 @@
-"use client";
-import React, { useContext } from "react";
+"use client"; // ✅ تحديد أن هذا المكون هو Client Component
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../../../context/AuthContext";
 import { DarkModeContext } from "../../../context/DarkModeContext";
 import { useTranslation } from "../useTranslation";
-import { LogIn, LogOut, Globe, Moon, Sun, Settings } from "lucide-react";
+import { LogIn, LogOut, Moon, Sun, Settings } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
 
-export default function SettingsPage({ params }: { params: { locale: string } }) {
+export default function SettingsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>; // ✅ تعريف الـ params كـ Promise
+}) {
+  const [locale, setLocale] = useState<string>("en"); // ✅ حالة للغة
   const { isAuthenticated, logout } = useAuth();
-  const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext);
-  const { t } = useTranslation(params.locale);
+  const { isDarkMode, toggleDarkMode } = React.useContext(DarkModeContext);
+  const [t, setT] = useState<any>((key: string) => key); // ✅ حالة مؤقتة للترجمة
+
+  useEffect(() => {
+    // فك تغليف الـ params باستخدام then
+    params.then((unwrappedParams) => {
+      setLocale(unwrappedParams.locale); // ✅ تحديث اللغة
+      // تحديث الترجمة بناءً على اللغة الجديدة
+      import(`../../../[locale]/translations/${unwrappedParams.locale}.json`).then(
+        (translations) => {
+          setT((key: string) => translations[key] || key);
+        }
+      );
+    });
+  }, [params]);
 
   // دالة لتأكيد تسجيل الخروج
   const handleLogout = () => {
@@ -30,10 +48,10 @@ export default function SettingsPage({ params }: { params: { locale: string } })
       <div className="flex items-center justify-between p-4 border-b border-gray-300 dark:border-gray-700">
         <span className="text-gray-800 dark:text-gray-200">{t("settings.language")}</span>
         <Link
-          href={`/${params.locale === "ar" ? "en" : "ar"}`}
+          href={`/${locale === "ar" ? "en" : "ar"}`}
           className="flex items-center gap-2 text-primary-600 hover:underline"
         >
-          {params.locale === "ar" ? (
+          {locale === "ar" ? (
             <>
               <ReactCountryFlag countryCode="US" svg style={{ width: "1.5em", height: "1.5em" }} />
               English
@@ -72,7 +90,7 @@ export default function SettingsPage({ params }: { params: { locale: string } })
           </button>
         ) : (
           <Link
-            href={`/${params.locale}/login`}
+            href={`/${locale}/login`}
             className="flex items-center gap-2 text-primary-600 hover:underline"
           >
             <LogIn size={20} />
