@@ -144,12 +144,17 @@ export default {
   },
   settings: {
     title: "Settings",
+    langage: "Language",
+    english: "English",
+    arabic: "Arabic",
     darkMode: "Dark Mode",
-    language: "Language",
-    account:  "Account",
+    dark: "Dark",
+    light: "Light",
+    account: "Account",
+    logout: "Logout",
     login: "Login",
-    dark: "Dark Mode",
-    light: "Light Mode",
+    logoutConfirmation: "Are you sure you want to logout?",
+    editProfile: "Edit Profile"
   },
   admin: {
     products: {

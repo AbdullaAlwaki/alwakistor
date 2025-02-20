@@ -146,6 +146,13 @@ export default {
     login: "تسجيل الدخول",
     dark: "الوضع المظلم",
     light: "الوضع الفاتح",
+    english: "الإنجليزية",
+    arabic: "العربية",
+    logout: "تسجيل الخروج",
+    login: "تسجيل الدخول",
+    logoutConfirmation: "هل أنت متأكد من تسجيل الخروج؟",
+    editProfile: "تعديل الملف الشخصي",
+
   },
   admin: {
     products: {
