@@ -1,7 +1,7 @@
 "use client"; // ✅ تحديد أن هذا المكون هو Client Component
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslation } from "../../../../[locale]/useTranslation";
+import { useTranslation } from "../../useTranslation";
 
 export default function ProductDetailsPage({
   params,
