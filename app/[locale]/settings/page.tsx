@@ -25,14 +25,10 @@ export default function SettingsPage({ params }: { params: Promise<{ locale: str
           const selectedLocale = unwrappedParams.locale;
           setLocale(selectedLocale); // تحديث الحالة
           localStorage.setItem("locale", selectedLocale); // تخزين اللغة في localStorage
-          const translations = useTranslation(selectedLocale);
-          setT(translations);
         } else {
           // إذا لم يكن هناك locale في params، استخدم القيمة المخزنة في localStorage
           const storedLocale = localStorage.getItem("locale") || "en";
           setLocale(storedLocale);
-          const translations = useTranslation(storedLocale);
-          setT(translations);
         }
       })
       .catch((error) => {
@@ -40,10 +36,14 @@ export default function SettingsPage({ params }: { params: Promise<{ locale: str
         // إذا حدث خطأ، استخدم القيمة المخزنة في localStorage أو الافتراضية
         const storedLocale = localStorage.getItem("locale") || "en";
         setLocale(storedLocale);
-        const translations = useTranslation(storedLocale);
-        setT(translations);
       });
   }, [params]);
+
+  // تحديث الترجمات عند تغيير locale
+  useEffect(() => {
+    const translations = useTranslation(locale);
+    setT(translations);
+  }, [locale]);
 
   // دالة لتأكيد تسجيل الخروج
   const handleLogout = () => {
@@ -56,9 +56,9 @@ export default function SettingsPage({ params }: { params: Promise<{ locale: str
   const handleLanguageChange = (newLocale: string) => {
     setLocale(newLocale); // تحديث الحالة
     localStorage.setItem("locale", newLocale); // تخزين اللغة الجديدة
-    const translations = useTranslation(newLocale);
-    setT(translations); // تحديث الترجمات
-    router.push(`/${newLocale}/settings`); // إعادة التوجيه باستخدام next/navigation
+
+    // إعادة التوجيه إلى نفس الصفحة مع locale الجديد
+    router.push(`/${newLocale}/settings`);
   };
 
   return (
