@@ -9,7 +9,7 @@ import ReactCountryFlag from "react-country-flag";
 import { useTranslation } from "../useTranslation";
 
 export default function SettingsPage({ params }: { params: Promise<{ locale: string }> }) {
-  const [locale, setLocale] = useState<string>("en"); // ✅ حالة للغة
+  const [locale, setLocale] = useState<string>(""); // ✅ حالة للغة
   const [t, setT] = useState<any>({}); // ✅ حالة مؤقتة للترجمة (بدون دالة افتراضية)
 
   const { isAuthenticated, logout } = useAuth();
