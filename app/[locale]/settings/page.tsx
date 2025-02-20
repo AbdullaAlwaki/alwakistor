@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useAuth } from "../../../context/AuthContext";
 import { DarkModeContext } from "../../../context/DarkModeContext";
 import { LogIn, LogOut, Moon, Sun, Settings } from "lucide-react";
@@ -9,9 +10,10 @@ import ReactCountryFlag from "react-country-flag";
 import { useTranslation } from "../useTranslation";
 
 export default function SettingsPage({ params }: { params: Promise<{ locale: string }> }) {
-  const [locale, setLocale] = useState<string>(""); // ✅ حالة للغة
-  const [t, setT] = useState<any>({}); // ✅ حالة مؤقتة للترجمة (بدون دالة افتراضية)
+  const [locale, setLocale] = useState<string>("en"); // ✅ حالة للغة
+  const [t, setT] = useState<any>({}); // ✅ حالة مؤقتة للترجمة
 
+  const router = useRouter();
   const { isAuthenticated, logout } = useAuth();
   const { isDarkMode, toggleDarkMode } = React.useContext(DarkModeContext);
 
@@ -20,15 +22,26 @@ export default function SettingsPage({ params }: { params: Promise<{ locale: str
     params
       .then((unwrappedParams) => {
         if (unwrappedParams && unwrappedParams.locale) {
-          setLocale(unwrappedParams.locale); // ✅ تحديث اللغة
-          const translations = useTranslation(unwrappedParams.locale); // ✅ استخدام useTranslation
+          const selectedLocale = unwrappedParams.locale;
+          setLocale(selectedLocale); // تحديث الحالة
+          localStorage.setItem("locale", selectedLocale); // تخزين اللغة في localStorage
+          const translations = useTranslation(selectedLocale);
           setT(translations);
         } else {
-          console.error("Invalid params:", unwrappedParams);
+          // إذا لم يكن هناك locale في params، استخدم القيمة المخزنة في localStorage
+          const storedLocale = localStorage.getItem("locale") || "en";
+          setLocale(storedLocale);
+          const translations = useTranslation(storedLocale);
+          setT(translations);
         }
       })
       .catch((error) => {
         console.error("Error resolving params:", error);
+        // إذا حدث خطأ، استخدم القيمة المخزنة في localStorage أو الافتراضية
+        const storedLocale = localStorage.getItem("locale") || "en";
+        setLocale(storedLocale);
+        const translations = useTranslation(storedLocale);
+        setT(translations);
       });
   }, [params]);
 
@@ -43,7 +56,7 @@ export default function SettingsPage({ params }: { params: Promise<{ locale: str
     <div className="max-w-lg mx-auto p-6 bg-white dark:bg-gray-900 rounded-lg shadow-md mt-10">
       {/* العنوان */}
       <h1 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">
-        {t["settings.title"] || "Settings"} {/* استخدم قيمة افتراضية إذا لم تكن الترجمة متوفرة */}
+        {t["settings.title"] || "Settings"}
       </h1>
 
       {/* تبديل اللغة */}
@@ -53,6 +66,15 @@ export default function SettingsPage({ params }: { params: Promise<{ locale: str
         </span>
         <Link
           href={`/${locale === "ar" ? "en" : "ar"}`}
+          onClick={(e) => {
+            e.preventDefault(); // منع السلوك الافتراضي للرابط
+            const newLocale = locale === "ar" ? "en" : "ar";
+            setLocale(newLocale); // تحديث الحالة
+            localStorage.setItem("locale", newLocale); // تخزين اللغة الجديدة
+            const translations = useTranslation(newLocale);
+            setT(translations); // تحديث الترجمات
+            router.push(`/${newLocale}/settings`); // إعادة التوجيه إلى نفس الصفحة مع locale جديد
+          }}
           className="flex items-center gap-2 text-primary-600 hover:underline"
         >
           {locale === "ar" ? (
