@@ -47,8 +47,8 @@ export default function RootLayout({
         <meta name="description" content={t("home.meta.description")} />
         <meta property="og:title" content={t("home.meta.title")} />
         <meta property="og:description" content={t("home.meta.description")} />
-        <meta property="og:image" content="../logo.jpg" />
-        <meta property="og:url" content="https://alwakistor.vercel.app/ar" />
+        <meta property="og:image" content="https://cdn.qwenlm.ai/output/e54871a8-b030-4f12-a895-c8d7c978d24d/t2i/30a8c698-9735-4199-b1bb-72c20b300490/36900098-a1b1-4e4e-9b55-79265e65a87b.png" />
+        <meta property="og:url" content="https://alwakistor.vercel.app" />
         <meta property="og:type" content="website" />
       </head>
       <body data-theme="light" className="bg-background text-foreground min-h-screen">
