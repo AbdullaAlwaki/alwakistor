@@ -1,42 +1,55 @@
-"use client"; // ✅ تحديد أن هذا المكون هو Client Component
-import React from "react";
-import Link from "next/link"; // ✅ استيراد Link لتحويل المستخدم إلى صفحة المنتج
-import Image from "next/image"; // ✅ استيراد مكون Image لتحسين تحميل الصور
+"use client";
 
-// تعريف واجهة الـ Props
+import React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import clsx from "clsx"; // 📌 لتحسين التعامل مع classNames
+
+// 🎯 تحديد واجهة المنتج لتحسين TypeScript
+interface Product {
+  _id: string;
+  name: string;
+  description: string;
+  imageUrl?: string;
+  price: number;
+  currency?: string;
+}
+
 interface ProductCardProps {
-  product: any;
+  product: Product;
   locale: string;
-  onAddToCart?: (product: any) => void; // ✅ إضافة الخاصية بشكل اختياري
+  onAddToCart?: (product: Product) => void;
 }
 
 export default function ProductCard({ product, locale, onAddToCart }: ProductCardProps) {
   const handleAddToCart = () => {
     if (onAddToCart) {
-      onAddToCart(product); // ✅ استدعاء الدالة عند النقر على زر الإضافة
+      onAddToCart(product);
     }
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105 hover:shadow-lg cursor-pointer">
+    <div
+      className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-transform
+        hover:scale-[1.03] hover:shadow-xl cursor-pointer duration-300"
+    >
       {/* صورة المنتج */}
       <Link href={`/products/${product._id}`} passHref>
-        <div className="w-full h-48 relative">
-          <img
+        <div className="relative w-full h-48">
+          <Image
             src={product.imageUrl || "/default-product-image.jpg"}
             alt={product.name}
-            
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            fill
             className="object-cover rounded-t-lg"
-            
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
       </Link>
 
       {/* تفاصيل المنتج */}
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-3">
         {/* اسم المنتج */}
-        <h2 className="text-xl font-bold text-gray-800 dark:text-white line-clamp-2">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-2">
           {product.name}
         </h2>
 
@@ -48,14 +61,19 @@ export default function ProductCard({ product, locale, onAddToCart }: ProductCar
         {/* السعر */}
         <p className="text-lg font-semibold text-primary-600 dark:text-primary-400">
           {locale === "ar" ? "السعر:" : "Price:"} {product.price}{" "}
-          {locale === "ar" ? "ريال" : "SAR"}
+          {product.currency || (locale === "ar" ? "ريال" : "SAR")}
         </p>
 
         {/* زر إضافة إلى السلة */}
         {onAddToCart && (
           <button
             onClick={handleAddToCart}
-            className="w-full bg-primary-600 text-white py-2 rounded hover:bg-primary-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+            className={clsx(
+              "w-full py-2 rounded-md transition-all duration-300 focus:outline-none focus:ring-2",
+              "bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-600 focus:ring-offset-2",
+              "dark:focus:ring-offset-gray-800"
+            )}
+            aria-label={locale === "ar" ? "إضافة المنتج إلى السلة" : "Add product to cart"}
           >
             {locale === "ar" ? "إضافة إلى السلة" : "Add to Cart"}
           </button>
