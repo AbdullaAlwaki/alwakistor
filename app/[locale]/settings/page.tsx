@@ -1,8 +1,8 @@
-"use client"; // ✅ تحديد أن هذا المكون هو Client Component
+"use client"; // تحديد أن هذا المكون هو Client Component
 
+import { useRouter } from "next/navigation"; // استخدام next/navigation
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useAuth } from "../../../context/AuthContext";
 import { DarkModeContext } from "../../../context/DarkModeContext";
 import { LogIn, LogOut, Moon, Sun, Settings } from "lucide-react";
@@ -10,10 +10,10 @@ import ReactCountryFlag from "react-country-flag";
 import { useTranslation } from "../useTranslation";
 
 export default function SettingsPage({ params }: { params: Promise<{ locale: string }> }) {
-  const [locale, setLocale] = useState<string>("en"); // ✅ حالة للغة
-  const [t, setT] = useState<any>({}); // ✅ حالة مؤقتة للترجمة
+  const [locale, setLocale] = useState<string>("en"); // حالة للغة
+  const [t, setT] = useState<any>({}); // حالة مؤقتة للترجمة
+  const router = useRouter(); // استخدام useRouter من next/navigation
 
-  const router = useRouter();
   const { isAuthenticated, logout } = useAuth();
   const { isDarkMode, toggleDarkMode } = React.useContext(DarkModeContext);
 
@@ -52,6 +52,15 @@ export default function SettingsPage({ params }: { params: Promise<{ locale: str
     }
   };
 
+  // دالة لتغيير اللغة
+  const handleLanguageChange = (newLocale: string) => {
+    setLocale(newLocale); // تحديث الحالة
+    localStorage.setItem("locale", newLocale); // تخزين اللغة الجديدة
+    const translations = useTranslation(newLocale);
+    setT(translations); // تحديث الترجمات
+    router.push(`/${newLocale}/settings`); // إعادة التوجيه باستخدام next/navigation
+  };
+
   return (
     <div className="max-w-lg mx-auto p-6 bg-white dark:bg-gray-900 rounded-lg shadow-md mt-10">
       {/* العنوان */}
@@ -64,17 +73,8 @@ export default function SettingsPage({ params }: { params: Promise<{ locale: str
         <span className="text-gray-800 dark:text-gray-200">
           {t["settings.language"] || "Language"}
         </span>
-        <Link
-          href={`/${locale === "ar" ? "en" : "ar"}`}
-          onClick={(e) => {
-            e.preventDefault(); // منع السلوك الافتراضي للرابط
-            const newLocale = locale === "ar" ? "en" : "ar";
-            setLocale(newLocale); // تحديث الحالة
-            localStorage.setItem("locale", newLocale); // تخزين اللغة الجديدة
-            const translations = useTranslation(newLocale);
-            setT(translations); // تحديث الترجمات
-            router.push(`/${newLocale}/settings`); // إعادة التوجيه إلى نفس الصفحة مع locale جديد
-          }}
+        <button
+          onClick={() => handleLanguageChange(locale === "ar" ? "en" : "ar")}
           className="flex items-center gap-2 text-primary-600 hover:underline"
         >
           {locale === "ar" ? (
@@ -96,7 +96,7 @@ export default function SettingsPage({ params }: { params: Promise<{ locale: str
               العربية
             </>
           )}
-        </Link>
+        </button>
       </div>
 
       {/* تبديل الوضع المظلم */}
