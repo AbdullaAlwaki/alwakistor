@@ -30,8 +30,10 @@ export default function SettingsPage({ params }: { params: Promise<{ locale: str
 
   // تحديث الترجمات عند تغيير locale
   useEffect(() => {
-    const translations = useTranslation(locale);
-    setT(translations);
+    if (locale) {
+      const translations = useTranslation(locale);
+      setT(translations);
+    }
   }, [locale]);
 
   // دالة لتغيير اللغة
