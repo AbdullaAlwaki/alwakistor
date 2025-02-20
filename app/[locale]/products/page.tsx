@@ -72,9 +72,6 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
               key={product.id || `product-${index}`} // ✅ إضافة مفتاح فريد لكل منتج
               product={product}
               locale={locale}
-              onAddToCart={(product) => {
-                console.log("Product added to cart:", product);
-              }}
             />
           ))}
         </div>

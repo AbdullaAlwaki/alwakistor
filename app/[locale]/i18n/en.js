@@ -65,6 +65,7 @@ export default {
     products: "Products",
     noResults : "No matching results",
     admin: "Admin",
+    settings: "Settings",
   },
   profile: {
     title: "Profile",
@@ -133,10 +134,22 @@ export default {
     noDescription: 'No description available for this product.',
     error: 'An error occurred while fetching products.',
     noProductsAvailable: 'No products available.',
+    addToCart: 'Add to Cart',
+    price: 'Price',
+    goBack: 'Go back to search',
   },
   orders: {
     title: "Manage Orders",
     description: "Here you can review and manage orders.",
+  },
+  settings: {
+    title: "Settings",
+    darkMode: "Dark Mode",
+    language: "Language",
+    account:  "Account",
+    login: "Login",
+    dark: "Dark Mode",
+    light: "Light Mode",
   },
   admin: {
     products: {

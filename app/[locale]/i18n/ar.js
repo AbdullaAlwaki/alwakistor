@@ -1,4 +1,5 @@
 import { verify } from "crypto";
+import { Languages } from "lucide-react";
 
 export default {
   home: {
@@ -62,6 +63,7 @@ export default {
     searchPlaceholder: "ابحث عن منتج...",
     products: "المنتجات",
     noResults : "لا توجد نتائج متطابقة",
+    settings: "الإعدادات",
   },
   profile: {
     title: "البروفايل",
@@ -128,10 +130,22 @@ export default {
     noDescription: 'لا يوجد وصف لهذا المنتج.',
     error: 'حدث خطأ أثناء جلب المنتجات.',
     noProductsAvailable: 'لا توجد منتجات متاحة.',
+    addToCart: 'إضافة إلى السلة',
+    price: 'السعر',
+    goBack: 'العودة إلى البحث',
   },
   orders: {
     title: "إدارة الطلبات",
     description: "هنا يمكنك مراجعة الطلبات وإدارتها.",
+  },
+  settings: {
+    title: "الإعدادات",
+    darkMode: "الوضع المظلم",
+    language: "اللغة",
+    account: "الحساب",
+    login: "تسجيل الدخول",
+    dark: "الوضع المظلم",
+    light: "الوضع الفاتح",
   },
   admin: {
     products: {
