@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../../../context/AuthContext";
 import { DarkModeContext } from "../../../context/DarkModeContext";
-import { useTranslation } from "../useTranslation";
 import { LogIn, LogOut, Moon, Sun, Settings } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
 
@@ -22,9 +21,9 @@ export default function SettingsPage({
     params.then((unwrappedParams) => {
       setLocale(unwrappedParams.locale); // ✅ تحديث اللغة
       // تحديث الترجمة بناءً على اللغة الجديدة
-      import(`../../../[locale]/translations/${unwrappedParams.locale}.json`).then(
+      import(`../i18n/${unwrappedParams.locale}.js`).then(
         (translations) => {
-          setT((key: string) => translations[key] || key);
+          setT((key: string) => translations.default[key] || key);
         }
       );
     });
