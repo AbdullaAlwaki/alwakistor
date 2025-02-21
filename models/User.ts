@@ -9,6 +9,7 @@ export interface IUser extends Document {
   emailVerified: boolean; // ✅ حقل للتحقق من البريد الإلكتروني
   emailVerificationToken?: string; // ✅ رمز التأكيد (اختياري)
   emailVerificationTokenCreatedAt?: Date; // ✅ تاريخ إنشاء رمز التأكيد (اختياري)
+  role: string; // ✅ حقل الدور
 }
 
 // تعريف مخطط المستخدم
@@ -41,6 +42,11 @@ const UserSchema: Schema = new Schema(
     emailVerificationTokenCreatedAt: {
       type: Date,
       default: null, // ✅ قيمة افتراضية
+    },
+    role: {
+      type: String,
+      default: "user", // ✅ القيمة الافتراضية هي `"user"`
+      enum: ["user", "admin", "seller"], // ✅ تم إضافة دور "seller"
     },
   },
   {
