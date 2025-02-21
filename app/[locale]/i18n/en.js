@@ -147,7 +147,7 @@ export default {
     title: "Advanced Settings",
     language: "Language Preferences",
     english: "English",
-    arabic: "Arabic",
+    arabic: "العربية",
     darkMode: "Theme Settings",
     dark: "Dark Theme",
     light: "Light Theme",

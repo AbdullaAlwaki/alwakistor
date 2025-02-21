@@ -1,24 +1,40 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useContext, useEffect, memo, useReducer, useMemo } from "react";
+import { useContext, useEffect, memo, useReducer } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { useAuth } from "../../../context/AuthContext";
 import { DarkModeContext } from "../../../context/DarkModeContext";
-import { LogIn, LogOut, Moon, Sun, Settings, Shield } from "lucide-react";
-import { useTranslation } from "../../[locale]/useTranslation";
+import { LogIn, LogOut, Moon, Sun } from "lucide-react";
+import { useTranslation } from "..//useTranslation";
 import React from "react";
 
 // Dynamic Imports for better performance
 const ReactCountryFlag = dynamic(() => import("react-country-flag"), { ssr: false });
 
+// Spinner Component
 const Spinner = () => (
-  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-gray-900 dark:border-gray-100"></div>
 );
 
 // Initial State and Reducer for State Management
-const initialState = {
+interface State {
+  locale: string;
+  isChangingLang: boolean;
+  isLoggingOut: boolean;
+  emailNotif: boolean;
+  pushNotif: boolean;
+}
+
+type Action =
+  | { type: "SET_LOCALE"; payload: string }
+  | { type: "TOGGLE_LANG_LOADING"; payload: boolean }
+  | { type: "TOGGLE_LOGOUT_LOADING"; payload: boolean }
+  | { type: "TOGGLE_EMAIL_NOTIF" }
+  | { type: "TOGGLE_PUSH_NOTIF" };
+
+const initialState: State = {
   locale: "en",
   isChangingLang: false,
   isLoggingOut: false,
@@ -26,7 +42,7 @@ const initialState = {
   pushNotif: true,
 };
 
-function reducer(state: any, action: any) {
+function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "SET_LOCALE":
       return { ...state, locale: action.payload };
@@ -58,9 +74,9 @@ const SettingsPage = ({ params }: { params: Promise<{ locale: string }> }) => {
     });
   }, [params]);
 
+  // Handle Logout
   const handleLogout = async () => {
     if (!confirm(t("settings.logoutConfirmation"))) return;
-
     dispatch({ type: "TOGGLE_LOGOUT_LOADING", payload: true });
     try {
       await logout();
@@ -72,6 +88,7 @@ const SettingsPage = ({ params }: { params: Promise<{ locale: string }> }) => {
     }
   };
 
+  // Handle Language Change
   const handleLanguageChange = async (newLocale: string) => {
     dispatch({ type: "TOGGLE_LANG_LOADING", payload: true });
     try {
@@ -87,101 +104,72 @@ const SettingsPage = ({ params }: { params: Promise<{ locale: string }> }) => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={`min-h-screen bg-gradient-to-br ${
-        isDarkMode ? "from-gray-900 to-gray-800" : "from-white to-gray-50"
-      } flex items-center justify-center p-4 transition-colors duration-300`}
-    >
-      <div
-        className={`w-full max-w-2xl rounded-2xl shadow-2xl ${
-          isDarkMode ? "bg-gray-800/90" : "bg-white/90"
-        } backdrop-blur-lg`}
-      >
-        <motion.div
-          initial={{ scale: 0.98 }}
-          animate={{ scale: 1 }}
-          className="p-8 space-y-6"
-        >
-          {/* Header */}
-          <Header title={t("settings.title")} />
+    <div className="p-6">
+      {/* Header */}
+      <Header title={t("settings.title")} />
 
-          {/* Language Section */}
-          <SectionWrapper title={t("settings.language")}>
-            <LanguageButton
-              locale={state.locale}
-              t={t}
-              isChangingLang={state.isChangingLang}
-              onChange={handleLanguageChange}
-            />
-          </SectionWrapper>
+      {/* Language Section */}
+      <SectionWrapper title={t("settings.language")}>
+        <LanguageButton
+          locale={state.locale}
+          t={t}
+          isChangingLang={state.isChangingLang}
+          onChange={(newLocale: string) => handleLanguageChange(newLocale)}
+        />
+      </SectionWrapper>
 
-          {/* Dark Mode Section */}
-          <SectionWrapper title={t("settings.darkMode")}>
-            <DarkModeToggle isDarkMode={isDarkMode} toggle={toggleDarkMode} t={t} />
-          </SectionWrapper>
+      {/* Dark Mode Section */}
+      <SectionWrapper title={t("settings.darkMode")}>
+        <DarkModeToggle isDarkMode={isDarkMode} toggle={toggleDarkMode} t={t} />
+      </SectionWrapper>
 
-          {/* Notifications Section */}
-          <SectionWrapper title={t("settings.notifications")}>
-            <ToggleItem
-              label={t("settings.emailNotifications")}
-              checked={state.emailNotif}
-              onChange={() => dispatch({ type: "TOGGLE_EMAIL_NOTIF" })}
-              locale={state.locale}
-            />
-            <ToggleItem
-              label={t("settings.pushNotifications")}
-              checked={state.pushNotif}
-              onChange={() => dispatch({ type: "TOGGLE_PUSH_NOTIF" })}
-              locale={state.locale}
-            />
-          </SectionWrapper>
+      {/* Notifications Section */}
+      <SectionWrapper title={t("settings.notifications")}>
+        <ToggleItem
+          label={t("settings.emailNotifications")}
+          checked={state.emailNotif}
+          onChange={() => dispatch({ type: "TOGGLE_EMAIL_NOTIF" })}
+          locale={state.locale}
+        />
+        <ToggleItem
+          label={t("settings.pushNotifications")}
+          checked={state.pushNotif}
+          onChange={() => dispatch({ type: "TOGGLE_PUSH_NOTIF" })}
+          locale={state.locale}
+        />
+      </SectionWrapper>
 
-          {/* Account Section */}
-          <SectionWrapper title={t("settings.account")}>
-            {isAuthenticated ? (
-              <>
-                <AccountStatus t={t} locale={state.locale} />
-                <LogoutButton
-                  isLoggingOut={state.isLoggingOut}
-                  handleLogout={handleLogout}
-                  t={t}
-                />
-              </>
-            ) : (
-              <LoginButton locale={state.locale} t={t} />
-            )}
-          </SectionWrapper>
-        </motion.div>
-      </div>
-    </motion.div>
+      {/* Account Section */}
+      <SectionWrapper title={t("settings.account")}>
+        {isAuthenticated ? (
+          <LogoutButton
+            isLoggingOut={state.isLoggingOut}
+            handleLogout={handleLogout}
+            t={t}
+          />
+        ) : (
+          <LoginButton locale={state.locale} t={t} />
+        )}
+      </SectionWrapper>
+    </div>
   );
 };
 
 // Subcomponents
-
 const Header = memo(({ title }: { title: string }) => (
-  <div className="flex items-center justify-between mb-8">
-    <h1 className="text-3xl font-bold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
-      {title}
-    </h1>
-    <Settings size={28} className="text-gray-500" />
-  </div>
+  <h1 className="text-2xl font-bold mb-6">{title}</h1>
 ));
 
 const AccountStatus = memo(({ t, locale }: { t: any; locale: string }) => (
-  <div className="flex items-center justify-between mb-4">
-    <span className="text-sm">{t("settings.accountStatus")}</span>
-    <div className="flex items-center gap-2">
-      <span className="text-green-500">● {t("settings.verified")}</span>
-      <button
-        className="text-sm text-blue-500 hover:underline"
-        onClick={() => window.location.href = `/${locale}/verify`}
-      >
-        {t("settings.verify")}
-      </button>
-    </div>
+  <div className="flex items-center gap-2 text-sm">
+    <span>{t("settings.accountStatus")}</span> ●{" "}
+    <span className="text-green-500">{t("settings.verified")}</span>
+    <button
+      onClick={() => (window.location.href = `/${locale}/verify`)}
+      className="text-blue-500 hover:underline"
+    >
+      {t("settings.verify")}
+    </button>
   </div>
 ));
 
@@ -198,7 +186,7 @@ const LogoutButton = memo(
     <button
       onClick={handleLogout}
       disabled={isLoggingOut}
-      className="w-full flex justify-center items-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 transition-all disabled:opacity-50"
+      className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all disabled:opacity-50"
     >
       {isLoggingOut ? (
         <>
@@ -218,103 +206,88 @@ const LogoutButton = memo(
 const LoginButton = memo(({ locale, t }: { locale: string; t: any }) => (
   <Link
     href={`/${locale}/login`}
-    className="flex items-center gap-2 justify-center px-4 py-2 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-500 transition-all"
+    className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
   >
     <LogIn size={20} />
     {t("settings.login")}
   </Link>
 ));
 
-const LanguageButton = memo(({ locale, t, isChangingLang, onChange }: any) => (
-  <button
-    onClick={() => onChange(locale === "ar" ? "en" : "ar")}
-    disabled={isChangingLang}
-    className="flex items-center gap-3 px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all disabled:opacity-50"
-  >
-    {isChangingLang ? (
-      <div className="flex items-center gap-2">
-        <Spinner />
-        {t("settings.changing")}
-      </div>
-    ) : (
-      <>
-        <ReactCountryFlag
-          countryCode={locale === "ar" ? "US" : "SA"}
-          svg
-          style={{ width: "1.5em", height: "1.5em" }}
-        />
-        <span className="font-medium">
-          {locale === "ar" ? t("settings.english") : t("settings.arabic")}
-        </span>
-      </>
-    )}
-  </button>
-));
-
-const DarkModeToggle = memo(({ isDarkMode, toggle, t }: any) => (
-  <button
-    onClick={toggle}
-    className="flex items-center gap-3 px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
-  >
-    {isDarkMode ? (
-      <Moon size={20} className="text-purple-400" />
-    ) : (
-      <Sun size={20} className="text-yellow-500" />
-    )}
-    <span className="font-medium">
-      {isDarkMode ? t("settings.dark") : t("settings.light")}
-    </span>
-  </button>
-));
-
-
-const ToggleItem = memo(({ label, checked, onChange, locale }: any) => {
-  const isRTL = locale === "ar";
-
-  return (
-    <div
-      className={`flex items-center p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors ${
-        isRTL ? "justify-end" : "justify-between"
-      }`}
+const LanguageButton = memo(
+  ({
+    locale,
+    t,
+    isChangingLang,
+    onChange,
+  }: {
+    locale: string;
+    t: any;
+    isChangingLang: boolean;
+    onChange: (newLocale: string) => void;
+  }) => (
+    <button
+      onClick={() => onChange(locale === "ar" ? "en" : "ar")}
+      disabled={isChangingLang}
+      className="flex items-center gap-3 px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all disabled:opacity-50"
     >
-      {/* النص */}
-      <span
-        className={`flex-grow ${isRTL ? "text-right mr-0" : "text-left"}`}
-      >
-        {label}
-      </span>
+      {isChangingLang ? (
+        <>
+          <Spinner />
+          {t("settings.changing")}
+        </>
+      ) : (
+        <>
+          <ReactCountryFlag countryCode={locale === "ar" ? "US" : "SA"} svg />
+          {locale === "ar" ? t("settings.english") : t("settings.arabic")}
+        </>
+      )}
+    </button>
+  )
+);
 
-      {/* الزر */}
-      <button
-        onClick={() => onChange(!checked)}
-        className={`w-12 h-6 rounded-full p-1 transition-colors ${
-          checked ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"
-        }`}
-      >
-        {/* الدائرة المتحركة */}
-        <div
-          className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-            checked 
-              ? (isRTL ? "translate-x-0" : "translate-x-6")
-              : (isRTL ? "translate-x-6" : "translate-x-0")
+const DarkModeToggle = memo(
+  ({ isDarkMode, toggle, t }: { isDarkMode: boolean; toggle: () => void; t: any }) => (
+    <button
+      onClick={toggle}
+      className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
+    >
+      {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+      {isDarkMode ? t("settings.light") : t("settings.dark")}
+    </button>
+  )
+);
+
+const ToggleItem = memo(
+  ({ label, checked, onChange, locale }: { label: string; checked: boolean; onChange: () => void; locale: string }) => {
+    const isRTL = locale === "ar";
+    return (
+      <div className="flex justify-between items-center mb-4">
+        {/* النص */}
+        <span className={`text-sm ${isRTL ? "ml-4" : "mr-4"}`}>{label}</span>
+        {/* الزر */}
+        <button
+          onClick={onChange}
+          className={`w-12 h-6 rounded-full p-1 transition-colors ${
+            checked ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"
           }`}
-        />
-      </button>
-    </div>
-  );
-});
+        >
+          {/* الدائرة المتحركة */}
+          <motion.span
+            layout
+            className="block w-4 h-4 bg-white rounded-full shadow-md"
+            transition={{ type: "spring", stiffness: 700, damping: 30 }}
+          />
+        </button>
+      </div>
+    );
+  }
+);
 
-
-
-const SectionWrapper = memo(({ title, children }: any) => (
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    className="p-6 bg-white dark:bg-gray-700/20 rounded-xl shadow-sm"
-  >
-    <h3 className="text-lg font-semibold mb-4">{title}</h3>
-    <div className="space-y-4">{children}</div>
-  </motion.div>
+const SectionWrapper = memo(({ title, children }: { title: string; children: React.ReactNode }) => (
+  <div className="mb-8">
+    <h2 className="text-xl font-semibold mb-4">{title}</h2>
+    {children}
+  </div>
 ));
 
 export default SettingsPage;

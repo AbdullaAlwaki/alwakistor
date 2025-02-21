@@ -143,7 +143,7 @@ export default {
   settings: {
     title: "الإعدادات المتقدمة",
     language: "إعدادات اللغة",
-    english: "الإنجليزية",
+    english: "English",
     arabic: "العربية",
     darkMode: "إعدادات السمة",
     dark: "الوضع المظلم",

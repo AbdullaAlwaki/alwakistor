@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
 import { NextResponse } from "next/server";
 import dbConnect from "../../../../lib/mongodb"; // ✅ استيراد الاتصال بقاعدة البيانات
@@ -27,9 +26,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "هذا البريد الإلكتروني مستخدم بالفعل" }, { status: 400 });
     }
 
-    // تشفير كلمة المرور
-    const hashedPassword = await bcrypt.hash(password, 10);
-
+    
     // إنشاء رمز التأكيد
     const verificationToken = Math.random().toString(36).substring(2, 15);
 
@@ -37,7 +34,7 @@ export async function POST(request: Request) {
     const newUser = new User({
       name,
       email,
-      password: hashedPassword,
+      password: password,
       emailVerified: false,
       emailVerificationToken: verificationToken,
       emailVerificationTokenCreatedAt: new Date(),
