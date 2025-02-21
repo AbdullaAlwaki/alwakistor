@@ -1,5 +1,6 @@
 import { verify } from "crypto";
 import { Languages } from "lucide-react";
+import { redirect } from "next/dist/server/api-utils";
 
 export default {
   home: {
@@ -218,5 +219,9 @@ export default {
     success: "تم التحقق من البريد الإلكتروني بنجاح!",
     error: "حدث خطأ أثناء التحقق من البريد الإلكتروني.",
     invalidLink: "رابط التحقق غير صالح.",
+    retry: "إعادة المحاولة",
+    backToLogin: "العودة إلى تسجيل الدخول",
+    redirecting: "جارٍ التوجيه...",
+    verifying: "جارٍ التحقق...",
   },
 };

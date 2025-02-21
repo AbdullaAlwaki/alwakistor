@@ -7,9 +7,6 @@ export async function GET(request: Request) {
     const token = url.searchParams.get("token")?.trim(); // ✅ إزالة المسافات الزائدة
     const email = url.searchParams.get("email")?.trim(); // ✅ إزالة المسافات الزائدة
 
-    console.log("Received Token:", token); // ✅ تسجيل الـ token للتحقق منه
-    console.log("Received Email:", email); // ✅ تسجيل البريد الإلكتروني للتحقق منه
-
     if (!token || !email) {
       return NextResponse.json({ error: "رابط التأكيد غير صالح" }, { status: 400 });
     }
@@ -20,8 +17,6 @@ export async function GET(request: Request) {
     if (!user) {
       return NextResponse.json({ error: "المستخدم غير موجود" }, { status: 404 });
     }
-
-    console.log("User Found:", user); // ✅ تسجيل بيانات المستخدم للتحقق منها
 
     // التحقق من صلاحية رمز التأكيد
     if (user.emailVerificationToken !== token) {
@@ -44,7 +39,6 @@ export async function GET(request: Request) {
     user.emailVerificationTokenCreatedAt = null; // ✅ حذف تاريخ الإنشاء
     await user.save();
 
-    console.log("Email Verified Successfully"); // ✅ تسجيل النجاح
 
     return NextResponse.json(
       { message: "تم تأكيد البريد الإلكتروني بنجاح." },

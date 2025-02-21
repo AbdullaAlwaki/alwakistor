@@ -214,4 +214,14 @@ export default {
     delete: "Delete",
   },
   },
+  verify: {
+    title: "Verify Your Email",
+    success: "Your email has been verified successfully!",
+    error: "An error occurred while verifying your email.",
+    invalidLink: "Invalid verification link.",
+    retry: "Retry Verification",
+    backToLogin: "Back to Login",
+    redirecting: "Redirecting...",
+    verifying: "Verifying...",
+  },
 };

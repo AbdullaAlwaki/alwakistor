@@ -1,5 +1,5 @@
 import dbConnect from "../../../lib/mongodb";
-import Product from "../../../models/Product";
+import FutureProduct from "../../../models/FutureProduct";
 
 export async function GET(request: Request) {
   try {
@@ -12,7 +12,7 @@ export async function GET(request: Request) {
 
     if (productId) {
       // إذا تم توفير معرف المنتج، جلب المنتج المحدد
-      const product = await Product.findById(productId);
+      const product = await FutureProduct.findById(productId);
       if (!product) {
         return new Response(
           JSON.stringify({ success: false, message: "Product not found." }),
@@ -35,7 +35,7 @@ export async function GET(request: Request) {
         }
       : {};
 
-    const products = await Product.find(searchCriteria);
+    const products = await FutureProduct.find(searchCriteria);
     return new Response(
       JSON.stringify({ success: true, data: products }),
       { headers: { "Content-Type": "application/json" } }

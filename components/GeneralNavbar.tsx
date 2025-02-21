@@ -6,8 +6,10 @@ import { useTranslation } from "../app/[locale]/useTranslation";
 
 // تحميل الأيقونات بشكل ديناميكي
 const ShoppingCart = dynamic(() => import("lucide-react").then((mod) => mod.ShoppingCart), { ssr: false });
-const SearchIcon = dynamic(() => import("lucide-react").then((mod) => mod.Search), { ssr: false }); // ✅ أيقونة البحث الجديدة
+const SearchIcon = dynamic(() => import("lucide-react").then((mod) => mod.Search), { ssr: false }); // ✅ أيقونة البحث (مكبرة)
 const Settings = dynamic(() => import("lucide-react").then((mod) => mod.Settings), { ssr: false });
+const HomeIcon = dynamic(() => import("lucide-react").then((mod) => mod.Home), { ssr: false }); // ✅ أيقونة المنزل
+const BoxIcon = dynamic(() => import("lucide-react").then((mod) => mod.Box), { ssr: false }); // ✅ أيقونة المنتجات
 
 interface NavbarProps {
   locale: string;
@@ -20,9 +22,6 @@ export default function GeneralNavbar({ locale }: NavbarProps) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false); // ✅ حالة لعرض/إخفاء شريط البحث
-
-  // تعريف الأنماط بشكل موحد
-  const navLinkClass = "text-foreground hover:text-accent flex items-center gap-1"; // ✅ توحيد الأنماط
 
   // استرداد البيانات من قاعدة البيانات بناءً على نص البحث
   const fetchSuggestions = async (query: string) => {
@@ -74,7 +73,7 @@ export default function GeneralNavbar({ locale }: NavbarProps) {
       <nav className="bg-background shadow-md p-4 lg:flex justify-between items-center hidden transition-all duration-500 ease-in-out">
         <div>
           <Link href={`/${locale}`} className="text-xl font-bold text-foreground flex items-center gap-2">
-            <SearchIcon size={24} />
+            <BoxIcon size={24} /> {/* ✅ أيقونة المنتجات */}
             Alwaki Store
           </Link>
         </div>
@@ -116,21 +115,21 @@ export default function GeneralNavbar({ locale }: NavbarProps) {
             )}
             {!isLoading && (
               <button type="submit" className="absolute right-2 top-1/2 transform -translate-y-1/2">
-                <SearchIcon size={20} />
+                <SearchIcon size={20} /> {/* ✅ أيقونة البحث (مكبرة) */}
               </button>
             )}
           </form>
           {/* الروابط الأخرى */}
-          <Link href={`/${locale}/products`} className={navLinkClass}>
-            <SearchIcon size={20} />
+          <Link href={`/${locale}/products`} className="text-foreground hover:text-accent flex items-center gap-1">
+            <BoxIcon size={20} /> {/* ✅ أيقونة المنتجات */}
             <span>{t("navbar.products")}</span>
           </Link>
-          <Link href={`/${locale}/cart`} className={navLinkClass}>
+          <Link href={`/${locale}/cart`} className="text-foreground hover:text-accent flex items-center gap-1">
             <ShoppingCart size={20} />
             <span>{t("navbar.cart")} {cartItems.length > 0 && `(${cartItems.length})`}</span>
           </Link>
           {/* رابط الإعدادات */}
-          <Link href={`/${locale}/settings`} className={navLinkClass}>
+          <Link href={`/${locale}/settings`} className="text-foreground hover:text-accent flex items-center gap-1">
             <Settings size={20} />
             <span>{t("navbar.settings")}</span>
           </Link>
@@ -140,29 +139,29 @@ export default function GeneralNavbar({ locale }: NavbarProps) {
       {/* شريط التنقل السفلي (للهواتف) */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-background shadow-md p-2 flex justify-around items-center h-20 transition-all duration-500 ease-in-out">
         <Link href={`/${locale}`} className="text-foreground hover:text-accent flex flex-col items-center">
-          <SearchIcon size={24} />
-          <span className="text-xs">{t("navbar.home")}</span>
+          <HomeIcon size={24} /> {/* ✅ أيقونة المنزل */}
+          <span className="text-xs">{t("navbar.home")}</span> {/* ✅ نص تحت الأيقونة */}
         </Link>
         <Link href={`/${locale}/products`} className="text-foreground hover:text-accent flex flex-col items-center">
-          <SearchIcon size={24} />
-          <span className="text-xs">{t("navbar.products")}</span>
+          <BoxIcon size={24} /> {/* ✅ أيقونة المنتجات */}
+          <span className="text-xs">{t("navbar.products")}</span> {/* ✅ نص تحت الأيقونة */}
         </Link>
         <Link href={`/${locale}/cart`} className="text-foreground hover:text-accent flex flex-col items-center">
           <ShoppingCart size={24} />
-          <span className="text-xs">{t("navbar.cart")} {cartItems.length > 0 && `(${cartItems.length})`}</span>
+          <span className="text-xs">{t("navbar.cart")} {cartItems.length > 0 && `(${cartItems.length})`}</span> {/* ✅ نص تحت الأيقونة */}
         </Link>
         {/* زر البحث */}
         <button
           onClick={() => setIsSearchOpen(!isSearchOpen)} // ✅ فتح/إغلاق شريط البحث
           className="text-foreground hover:text-accent flex flex-col items-center"
         >
-          <SearchIcon size={24} className="text-accent" /> {/* ✅ أيقونة بارزة */}
-          <span className="text-xs">{t("navbar.search")}</span>
+          <SearchIcon size={24} /> {/* ✅ أيقونة البحث (مكبرة) */}
+          <span className="text-xs">{t("navbar.search")}</span> {/* ✅ نص تحت الأيقونة */}
         </button>
         {/* رابط الإعدادات */}
         <Link href={`/${locale}/settings`} className="text-foreground hover:text-accent flex flex-col items-center">
           <Settings size={24} />
-          <span className="text-xs">{t("navbar.settings")}</span>
+          <span className="text-xs">{t("navbar.settings")}</span> {/* ✅ نص تحت الأيقونة */}
         </Link>
       </nav>
 
@@ -205,7 +204,7 @@ export default function GeneralNavbar({ locale }: NavbarProps) {
             )}
             {!isLoading && (
               <button type="submit" className="absolute right-2 top-1/2 transform -translate-y-1/2">
-                <SearchIcon size={20} />
+                <SearchIcon size={20} /> {/* ✅ أيقونة البحث (مكبرة) */}
               </button>
             )}
           </form>

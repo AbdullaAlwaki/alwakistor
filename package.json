@@ -7,8 +7,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
-  },
+    "lint": "next lint",
+    "alwaki": "git add . && git commit -m 'add edit 21.02' && git push"
+    },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@paypal/react-paypal-js": "^8.8.2",
@@ -35,12 +36,14 @@
     "react-country-flag": "^3.1.0",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.2",
+    "react-particles": "^2.12.2",
     "react-toastify": "^11.0.3",
     "redis": "^4.7.0",
     "speakeasy": "^2.0.0",
     "stripe": "^17.6.0",
     "swiper": "^11.2.4",
     "swr": "^2.3.2",
+    "tsparticles": "^3.8.1",
     "zod": "^3.24.2"
   },
   "devDependencies": {
