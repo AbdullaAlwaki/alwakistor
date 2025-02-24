@@ -1,217 +1,307 @@
 "use client";
+import { motion } from "framer-motion";
+import { 
+  CurrencyDollarIcon,
+  ShoppingBagIcon,
+  ChartPieIcon,
+  UserGroupIcon,
+  ArrowTrendingUpIcon,
+} from "@heroicons/react/24/outline";
+import dynamic from "next/dynamic";
+import { ApexOptions } from "apexcharts";
 
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-export default function AdminDashboard() {
-  const [products, setProducts] = useState<{ id: number; name: string; description: string; price: number; imageUrl: string }[]>([]);
-  const [newProduct, setNewProduct] = useState({
-    name: "",
-    description: "",
-    price: 0,
-    imageUrl: "",
-  });
-  const [editingProduct, setEditingProduct] = useState<{ id: number; name: string; description: string; price: number; imageUrl: string } | null>(null);
-  const router = useRouter();
+interface Order {
+  id: string;
+  customer: string;
+  amount: string;
+  status: "مكتمل" | "قيد التوصيل" | "معلق";
+}
 
-  // جلب جميع المنتجات
-  useEffect(() => {
-    fetch("/api/admin/products")
-      .then((res) => res.json())
-      .then((data) => setProducts(data.data))
-      .catch((err) => console.error("Error fetching products:", err));
-  }, []);
+interface Product {
+  name: string;
+  sales: number;
+  revenue: string;
+}
 
-  // إضافة منتج جديد
-  const handleAddProduct = async (e: { preventDefault: () => void; }) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("/api/admin/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newProduct),
-      });
-      const data = await response.json();
-      if (data.success) {
-        setProducts([...products, data.data]);
-        setNewProduct({ name: "", description: "", price: 0, imageUrl: "" });
-      }
-    } catch (error) {
-      console.error("Error adding product:", error);
-    }
+const DashboardPage = () => {
+  const salesChartOptions: ApexOptions = {
+    chart: {
+      type: "area",
+      fontFamily: "Noto Sans Arabic, sans-serif",
+
+      toolbar: {
+        show: true,
+        tools: {
+          download: true,
+          selection: false,
+          zoom: false,
+          zoomin: false,
+          zoomout: false,
+          pan: false,
+        },
+      },
+    },
+    colors: ["#4F46E5"],
+    xaxis: {
+      categories: ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو"],
+      labels: {
+        style: {
+          fontFamily: "Noto Sans Arabic",
+        },
+      },
+    },
+    yaxis: {
+      labels: {
+        style: {
+          fontFamily: "Noto Sans Arabic",
+        },
+      },
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    tooltip: {
+      style: {
+        fontFamily: "Noto Sans Arabic",
+      },
+    },
+    legend: {
+      fontFamily: "Noto Sans Arabic",
+      position: "top",
+      horizontalAlign: "right",
+    },
   };
 
-  // تعديل منتج موجود
-  const handleEditProduct = async (e: { preventDefault: () => void; }) => {
-    e.preventDefault();
-    if (!editingProduct) return;
-    try {
-      const response = await fetch(`/api/admin/products/${editingProduct.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editingProduct),
-      });
-      const data = await response.json();
-      if (data.success) {
-        setProducts(products.map((p) => (p.id === editingProduct.id ? data.data : p)));
-        setEditingProduct(null);
-      }
-    } catch (error) {
-      console.error("Error updating product:", error);
-    }
+  const salesChartSeries = [{
+    name: "المبيعات",
+    data: [30, 40, 35, 50, 49, 60],
+  }];
+
+  const ordersChartOptions: ApexOptions = {
+    ...salesChartOptions,
+    colors: ["#10B981"],
   };
 
-  // حذف منتج
-  const handleDeleteProduct = async (id: number) => {
-    try {
-      await fetch(`/api/admin/products/${id}`, { method: "DELETE" });
-      setProducts(products.filter((p) => p.id !== id));
-    } catch (error) {
-      console.error("Error deleting product:", error);
-    }
-  };
+  const ordersChartSeries = [{
+    name: "الطلبات",
+    data: [15, 25, 20, 30, 27, 35],
+  }];
+
+  const recentOrders: Order[] = [
+    { id: "#1234", customer: "محمد أحمد", amount: "٥٩٩ ر.س", status: "مكتمل" },
+    { id: "#1235", customer: "علي حسن", amount: "٣٩٩ ر.س", status: "قيد التوصيل" },
+    { id: "#1236", customer: "فاطمة عمر", amount: "٨٩٩ ر.س", status: "معلق" },
+  ];
+
+  const topProducts: Product[] = [
+    { name: "حذاء رياضي", sales: 142, revenue: "٥٤٬٣٢١ ر.س" },
+    { name: "سماعات لاسلكية", sales: 98, revenue: "٣٢٬١٥٤ ر.س" },
+    { name: "ساعة ذكية", sales: 75, revenue: "٢٧٬٨٩٩ ر.س" },
+  ];
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-8">لوحة التحكم</h1>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <header className="bg-white dark:bg-gray-800 shadow-sm p-6 mb-8">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+              لوحة التحكم
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">
+              {new Date().toLocaleDateString("ar-SA", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+          </div>
+        </div>
+      </header>
 
-      {/* نموذج إضافة منتج */}
-      <div className="mb-8">
-        <h2 className="text-xl font-bold mb-4">إضافة منتج جديد</h2>
-        <form onSubmit={handleAddProduct} className="space-y-4">
-          <input
-            type="text"
-            placeholder="اسم المنتج"
-            value={newProduct.name}
-            onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-            className="w-full p-2 border rounded"
-            required
+      <div className="px-6 pb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
+          <StatCard
+            title="إجمالي المبيعات"
+            value="٢٣٤٬٥٦٧ ر.س"
+            icon={CurrencyDollarIcon}
+            color="bg-indigo-100 dark:bg-indigo-900"
           />
-          <input
-            type="text"
-            placeholder="وصف المنتج"
-            value={newProduct.description}
-            onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-            className="w-full p-2 border rounded"
+          <StatCard
+            title="الطلبات الجديدة"
+            value="١٬٢٣٤"
+            icon={ShoppingBagIcon}
+            color="bg-green-100 dark:bg-green-900"
           />
-          <input
-            type="number"
-            placeholder="سعر المنتج"
-            value={newProduct.price}
-            onChange={(e) => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) })}
-            className="w-full p-2 border rounded"
-            required
+          <StatCard
+            title="المنتجات"
+            value="٤٥٦"
+            icon={ChartPieIcon}
+            color="bg-blue-100 dark:bg-blue-900"
           />
-          <input
-            type="text"
-            placeholder="رابط الصورة"
-            value={newProduct.imageUrl}
-            onChange={(e) => setNewProduct({ ...newProduct, imageUrl: e.target.value })}
-            className="w-full p-2 border rounded"
+          <StatCard
+            title="العملاء الجدد"
+            value="٧٨"
+            icon={UserGroupIcon}
+            color="bg-purple-100 dark:bg-purple-900"
           />
-          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-            إضافة المنتج
-          </button>
-        </form>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                إحصائيات المبيعات
+              </h3>
+              <ArrowTrendingUpIcon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+            </div>
+            <Chart
+              options={salesChartOptions}
+              series={salesChartSeries}
+              type="area"
+              height={300}
+            />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                تطور الطلبات
+              </h3>
+              <ArrowTrendingUpIcon className="w-6 h-6 text-green-600 dark:text-green-400" />
+            </div>
+            <Chart
+              options={ordersChartOptions}
+              series={ordersChartSeries}
+              type="area"
+              height={300}
+            />
+          </motion.div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <RecentOrdersTable orders={recentOrders} />
+          <TopProductsList products={topProducts} />
+        </div>
       </div>
+    </div>
+  );
+};
 
-      {/* جدول عرض المنتجات */}
-      <h2 className="text-xl font-bold mb-4">قائمة المنتجات</h2>
-      <table className="w-full border-collapse border">
+interface StatCardProps {
+  title: string;
+  value: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+}
+
+const StatCard = ({ title, value, icon: Icon, color }: StatCardProps) => (
+  <motion.div
+    whileHover={{ y: -5 }}
+    className={`${color} p-6 rounded-xl shadow-sm transition-all duration-300`}
+  >
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="text-gray-500 dark:text-gray-300 text-sm">{title}</p>
+        <p className="text-2xl font-bold text-gray-800 dark:text-white mt-2">
+          {value}
+        </p>
+      </div>
+      <div className="p-3 bg-white dark:bg-gray-700 rounded-lg">
+        <Icon className="w-6 h-6 text-current" />
+      </div>
+    </div>
+  </motion.div>
+);
+
+const RecentOrdersTable = ({ orders }: { orders: Order[] }) => (
+  <motion.div
+    initial={{ opacity: 0, x: 20 }}
+    animate={{ opacity: 1, x: 0 }}
+    className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
+  >
+    <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+      الطلبات الأخيرة
+    </h3>
+    <div className="overflow-x-auto">
+      <table className="w-full">
         <thead>
-          <tr className="bg-gray-200">
-            <th className="border p-2">اسم المنتج</th>
-            <th className="border p-2">الوصف</th>
-            <th className="border p-2">السعر</th>
-            <th className="border p-2">الصورة</th>
-            <th className="border p-2">الإجراءات</th>
+          <tr className="text-gray-500 dark:text-gray-400 border-b">
+            <th className="text-right pb-3">رقم الطلب</th>
+            <th className="text-right pb-3">العميل</th>
+            <th className="text-right pb-3">المبلغ</th>
+            <th className="text-right pb-3">الحالة</th>
           </tr>
         </thead>
         <tbody>
-          {products.map((product) => (
-            <tr key={product.id}>
-              <td className="border p-2">{product.name}</td>
-              <td className="border p-2">{product.description || "-"}</td>
-              <td className="border p-2">${product.price}</td>
-              <td className="border p-2">
-                {product.imageUrl && (
-                  <img src={product.imageUrl} alt={product.name} className="w-16 h-16 object-cover" />
-                )}
-              </td>
-              <td className="border p-2 space-x-2">
-                <button
-                  onClick={() => setEditingProduct(product)}
-                  className="bg-yellow-500 text-white px-2 py-1 rounded"
+          {orders.map((order) => (
+            <tr key={order.id} className="border-b last:border-b-0">
+              <td className="py-3 text-gray-800 dark:text-gray-200">{order.id}</td>
+              <td className="py-3 text-gray-800 dark:text-gray-200">{order.customer}</td>
+              <td className="py-3 text-gray-800 dark:text-gray-200">{order.amount}</td>
+              <td className="py-3">
+                <span
+                  className={`px-2 py-1 rounded-full text-sm ${
+                    order.status === "مكتمل"
+                      ? "bg-green-100 text-green-800"
+                      : order.status === "قيد التوصيل"
+                      ? "bg-blue-100 text-blue-800"
+                      : "bg-yellow-100 text-yellow-800"
+                  }`}
                 >
-                  تعديل
-                </button>
-                <button
-                  onClick={() => handleDeleteProduct(product.id)}
-                  className="bg-red-500 text-white px-2 py-1 rounded"
-                >
-                  حذف
-                </button>
+                  {order.status}
+                </span>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-
-      {/* نموذج تعديل المنتج */}
-      {editingProduct && (
-        <div className="mt-8">
-          <h2 className="text-xl font-bold mb-4">تعديل المنتج</h2>
-          <form onSubmit={handleEditProduct} className="space-y-4">
-            <input
-              type="text"
-              placeholder="اسم المنتج"
-              value={editingProduct.name}
-              onChange={(e) =>
-                setEditingProduct({ ...editingProduct, name: e.target.value })
-              }
-              className="w-full p-2 border rounded"
-              required
-            />
-            <input
-              type="text"
-              placeholder="وصف المنتج"
-              value={editingProduct.description}
-              onChange={(e) =>
-                setEditingProduct({ ...editingProduct, description: e.target.value })
-              }
-              className="w-full p-2 border rounded"
-            />
-            <input
-              type="number"
-              placeholder="سعر المنتج"
-              value={editingProduct.price}
-              onChange={(e) =>
-                setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) })
-              }
-              className="w-full p-2 border rounded"
-              required
-            />
-            <input
-              type="text"
-              placeholder="رابط الصورة"
-              value={editingProduct.imageUrl}
-              onChange={(e) =>
-                setEditingProduct({ ...editingProduct, imageUrl: e.target.value })
-              }
-              className="w-full p-2 border rounded"
-            />
-            <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">
-              تحديث المنتج
-            </button>
-            <button
-              onClick={() => setEditingProduct(null)}
-              className="bg-gray-500 text-white px-4 py-2 rounded ml-2"
-            >
-              إلغاء
-            </button>
-          </form>
-        </div>
-      )}
     </div>
-  );
-}
+  </motion.div>
+);
+
+const TopProductsList = ({ products }: { products: Product[] }) => (
+  <motion.div
+    initial={{ opacity: 0, x: -20 }}
+    animate={{ opacity: 1, x: 0 }}
+    className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
+  >
+    <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+      المنتجات الأكثر مبيعاً
+    </h3>
+    <div className="space-y-4">
+      {products.map((product, index) => (
+        <div
+          key={product.name}
+          className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-gray-500 dark:text-gray-300">{index + 1}.</span>
+            <span className="font-medium text-gray-800 dark:text-white">
+              {product.name}
+            </span>
+          </div>
+          <div className="text-right">
+            <p className="text-gray-800 dark:text-white">{product.sales} مبيع</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {product.revenue}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </motion.div>
+);
+
+export default DashboardPage;

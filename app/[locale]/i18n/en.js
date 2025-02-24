@@ -213,6 +213,28 @@ export default {
     edit: "Edit",
     delete: "Delete",
   },
+  users: {
+    title: "Manage Users",
+    description: "Here you can review and manage users.",
+    addUser: "Add New User",
+    editUser: "Edit User",
+    delete: "Delete",
+    cancel: "Cancel",
+    update: "Update",
+    confirmDelete: "Are you sure you want to delete this user?",
+    edit: "Edit",
+    table: {
+      name: "Name",
+      email: "Email",
+      role: "Role",
+      actions: "Actions",
+    },
+    form: {
+      name: "Name",
+      email: "Email",
+      role: "Role",
+    }
+  }
   },
   verify: {
     title: "Verify Your Email",

@@ -42,3 +42,20 @@ nav.fixed.bottom-0 {
   z-index: 1000; /* Ensure the navbar stays on top */
 }
 
+@layer utilities {
+  .rtl {
+    direction: rtl;
+  }
+  
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-800;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+  }
+}

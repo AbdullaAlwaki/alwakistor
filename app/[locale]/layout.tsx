@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
+
 import "../styles/globals.css";
 import { CombinedProvider } from "../../context/CombinedProvider";
 import { LocaleProvider } from "../../context/LocaleContext";

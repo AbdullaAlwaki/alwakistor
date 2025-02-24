@@ -3,12 +3,15 @@ import Sidebar from '../../../components-Admin/Sidebar';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex">
-      {/* Sidebar */}
+    <div className="max-h-screen bg-gray-50 dark:bg-gray-900 flex">
       <Sidebar />
-
-      {/* Main Content */}
-      <main className="flex-1 p-8">{children}</main>
+      
+      {/* المحتوى الرئيسي (80% للديسكتوب) */}
+      <main className="flex-1 lg:w-4/5 p-4 lg:p-6">
+        <div className="max-w-full mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 lg:p-6">
+          {children}
+        </div>
+      </main>
     </div>
   );
 }
