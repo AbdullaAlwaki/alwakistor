@@ -114,7 +114,6 @@ const MobileSidebar = memo(({
   isOpen: boolean; 
   onClose: () => void 
 }) => {
-  const pathname = usePathname();
   const NAV_ITEMS: NavItem[] = [
     { path: "/admin/dashboard", icon: HomeIcon, label: "الرئيسية" },
     { path: "/admin/products", icon: CubeIcon, label: "المنتجات", badge: 5 },
@@ -127,36 +126,40 @@ const MobileSidebar = memo(({
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.aside
-          initial={{ x: "100%" }}
+        <motion.div
+          initial={{ x: '100%' }}
           animate={{ x: 0 }}
-          exit={{ x: "100%" }}
-          transition={{ type: "spring", bounce: 0.15 }}
-          className="fixed inset-y-0 right-0 w-72 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 z-50 p-4 shadow-2xl"
-          role="navigation"
-          aria-label="القائمة الجانبية"
+          exit={{ x: '100%' }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          className="fixed inset-0 z-[999] bg-black/50 lg:hidden"
+          onClick={onClose}
         >
-          <div className="flex justify-between items-center mb-8">
-            <UserProfile />
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
-              aria-label="إغلاق القائمة"
-            >
-              <XMarkIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-            </button>
-          </div>
+          <motion.aside
+            className="absolute right-0 top-0 h-full w-72 bg-white dark:bg-gray-900 shadow-2xl p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-6">
+              <UserProfile />
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                aria-label="إغلاق القائمة"
+              >
+                <XMarkIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+              </button>
+            </div>
 
-          <nav className="space-y-3">
-            {NAV_ITEMS.map((item) => (
-              <NavLink key={item.path} item={item} />
-            ))}
-          </nav>
+            <nav className="space-y-2">
+              {NAV_ITEMS.map((item) => (
+                <NavLink key={item.path} item={item} />
+              ))}
+            </nav>
 
-          <div className="mt-8 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <LogoutButton />
-          </div>
-        </motion.aside>
+            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <LogoutButton />
+            </div>
+          </motion.aside>
+        </motion.div>
       )}
     </AnimatePresence>
   );
@@ -168,45 +171,54 @@ const Sidebar = memo(() => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    const handleResize = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      if (!mobile) setIsMobileOpen(false);
+    };
+
     window.addEventListener('resize', handleResize);
     handleResize();
+    
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useEffect(() => {
-    if (!isMobile && isMobileOpen) {
-      setIsMobileOpen(false);
+    if (isMobileOpen) {
+      document.body.classList.add('menu-open');
+    } else {
+      document.body.classList.remove('menu-open');
     }
-  }, [isMobile, isMobileOpen]);
+  }, [isMobileOpen]);
 
-  const handleCloseMobile = useCallback(() => setIsMobileOpen(false), []);
   const toggleCollapse = useCallback(() => setIsCollapsed(prev => !prev), []);
+  const toggleMobileMenu = useCallback(() => setIsMobileOpen(prev => !prev), []);
 
   return (
     <SidebarContext.Provider value={{ isCollapsed, toggleCollapse }}>
-      {/* Mobile Menu Button */}
+      {/* زر الهمبرجر المعدل */}
       {isMobile && (
-        <button
-          onClick={() => setIsMobileOpen(prev => !prev)}
-          className="lg:hidden fixed top-4 left-4 z-50 p-2.5 rounded-xl shadow-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-          aria-label="فتح/إغلاق القائمة"
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed top-4 right-4 z-[1000] p-3 bg-white dark:bg-gray-800 rounded-xl shadow-xl lg:hidden"
+          onClick={toggleMobileMenu}
+          aria-label="قائمة التنقل"
+          style={{ zIndex: 1000 }}
         >
           {isMobileOpen ? (
-            <XMarkIcon className="w-7 h-7 text-gray-800 dark:text-white" />
+            <XMarkIcon className="w-8 h-8 text-gray-800 dark:text-white" />
           ) : (
-            <Bars3Icon className="w-7 h-7 text-gray-800 dark:text-white" />
+            <Bars3Icon className="w-8 h-8 text-gray-800 dark:text-white" />
           )}
-        </button>
+        </motion.button>
       )}
 
-      {/* Desktop Sidebar */}
+      {/* سايدبار الديسكتوب */}
       <aside
         className={`hidden lg:block ${
           isCollapsed ? 'w-20' : 'w-64'
         } min-h-screen bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 transition-all duration-300`}
-        role="navigation"
-        aria-label="القائمة الجانبية الرئيسية"
       >
         <div className={`${isCollapsed ? 'justify-center' : 'justify-end'} flex mb-6 p-2`}>
           <button
@@ -244,8 +256,8 @@ const Sidebar = memo(() => {
         )}
       </aside>
 
-      {/* Mobile Sidebar */}
-      <MobileSidebar isOpen={isMobileOpen} onClose={handleCloseMobile} />
+      {/* قائمة الجوال */}
+      <MobileSidebar isOpen={isMobileOpen} onClose={toggleMobileMenu} />
     </SidebarContext.Provider>
   );
 });

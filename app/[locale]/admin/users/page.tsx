@@ -19,7 +19,7 @@ export default function ManageUsers() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('/api/admin/users');
+        const response = await fetch("/api/admin/users");
         const data = await response.json();
         setUsers(data.data || []);
       } catch (err) {
@@ -28,7 +28,7 @@ export default function ManageUsers() {
         setLoading(false);
       }
     };
-    
+
     fetchUsers();
   }, []);
 
@@ -37,24 +37,28 @@ export default function ManageUsers() {
     setLoading(true);
     try {
       const isEdit = !!selectedUser;
-      const method = isEdit ? 'PUT' : 'POST';
-      const url = isEdit ? `/api/admin/users/${selectedUser._id}` : '/api/admin/users';
+      const method = isEdit ? "PUT" : "POST";
+      const url = "/api/admin/users"; // ❗️ استخدام نفس المسار للإضافة والتعديل
+      const body = isEdit
+        ? { ...formData, id: selectedUser?._id } // ❗️ إضافة id عند التعديل
+        : formData;
 
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
       });
 
-      if (!response.ok) throw new Error('Request failed');
+      if (!response.ok) throw new Error("Request failed");
 
       const data = await response.json();
-      
-      setUsers(prev => isEdit
-        ? prev.map(u => u._id === data.data._id ? data.data : u)
-        : [...prev, data.data]
+
+      setUsers((prev) =>
+        isEdit
+          ? prev.map((u) => (u._id === data.data._id ? data.data : u))
+          : [...prev, data.data]
       );
-      
+
       setIsModalOpen(false);
       setSelectedUser(undefined);
     } catch (err) {
@@ -67,16 +71,21 @@ export default function ManageUsers() {
   // Handle user deletion
   const handleDelete = async () => {
     if (!selectedUser) return;
+
     setLoading(true);
-    
+
     try {
-      const response = await fetch(`/api/admin/users/${selectedUser._id}`, {
-        method: 'DELETE',
+      const response = await fetch("/api/admin/users", { // ❗️ استخدام نفس المسار
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: selectedUser._id }), // ❗️ إرسال id عبر جسم الطلب
       });
 
-      if (!response.ok) throw new Error('Delete failed');
-      
-      setUsers(prev => prev.filter(u => u._id !== selectedUser._id));
+      if (!response.ok) throw new Error("Delete failed");
+
+      const data = await response.json();
+
+      setUsers((prev) => prev.filter((u) => u._id !== selectedUser._id));
       setIsDeleteOpen(false);
       setSelectedUser(undefined);
     } catch (err) {
@@ -92,9 +101,7 @@ export default function ManageUsers() {
         {/* Header Section */}
         <header className="mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-              User Management
-            </h1>
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">User Management</h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">
               Manage application users and permissions
             </p>
@@ -116,11 +123,8 @@ export default function ManageUsers() {
             <LoadingSpinner size="lg" text="Loading users..." />
           </div>
         )}
-
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
-          </div>
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>
         )}
 
         {/* User Table */}
@@ -132,11 +136,10 @@ export default function ManageUsers() {
               setIsModalOpen(true);
             }}
             onDelete={(id) => {
-              setSelectedUser(users.find(u => u._id === id));
+              setSelectedUser(users.find((u) => u._id === id)); // تحديد المستخدم المحدد
               setIsDeleteOpen(true);
             }}
-          t={(key) => key.replace('_', ' ')}
-
+            t={(key) => key.replace("_", " ")}
           />
         )}
 
@@ -150,9 +153,8 @@ export default function ManageUsers() {
           onSubmit={handleSubmit}
           user={selectedUser}
           isEditing={!!selectedUser}
-          t={(key) => key.replace('_', ' ')}
+          t={(key) => key.replace("_", " ")}
         />
-
         <DeleteConfirmation
           isOpen={isDeleteOpen}
           onConfirm={handleDelete}
@@ -160,8 +162,8 @@ export default function ManageUsers() {
             setIsDeleteOpen(false);
             setSelectedUser(undefined);
           }}
-          userName={selectedUser?.name || ''}
-          t={(key) => key.replace('_', ' ')}
+          userName={selectedUser?.name || ""}
+          t={(key) => key.replace("_", " ")}
         />
       </div>
     </div>
