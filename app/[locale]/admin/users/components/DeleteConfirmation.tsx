@@ -1,21 +1,18 @@
-import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
-
-interface Props {
-  isOpen: boolean;
-  onConfirm: () => void;
-  onCancel: () => void;
-  userName: string;
-  t: (key: string, params?: Record<string, string>) => string;
-}
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 
 const DeleteConfirmation = ({ 
   isOpen, 
   onConfirm, 
   onCancel, 
-  userName, 
-  t 
-}: Props) => {
+  userName 
+}: {
+  isOpen: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+  userName: string;
+}) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -33,10 +30,10 @@ const DeleteConfirmation = ({
             <div className="text-center">
               <div className="text-red-500 text-4xl mb-4">⚠️</div>
               <h3 className="text-xl font-bold mb-2 dark:text-white">
-                {t('delete_confirmation_title')}
+                Delete Confirmation
               </h3>
               <p className="text-gray-600 dark:text-gray-400 mb-6">
-                {t('delete_confirmation_message', { userName })}
+                Are you sure you want to delete <strong>{userName}</strong>?
               </p>
               
               <div className="flex gap-3 justify-center">
@@ -46,7 +43,7 @@ const DeleteConfirmation = ({
                   onClick={onCancel}
                   className="px-5 py-2.5 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600"
                 >
-                  {t('cancel')}
+                  Cancel
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -54,7 +51,7 @@ const DeleteConfirmation = ({
                   onClick={onConfirm}
                   className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg"
                 >
-                  {t('confirm_delete')}
+                  Confirm Delete
                 </motion.button>
               </div>
             </div>

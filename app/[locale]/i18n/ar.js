@@ -1,6 +1,5 @@
-import { verify } from "crypto";
-import { Languages } from "lucide-react";
-import { redirect } from "next/dist/server/api-utils";
+import next from "next";
+import { title } from "process";
 
 export default {
   home: {
@@ -164,38 +163,41 @@ export default {
     adminPanel: "فتح لوحة التحكم",
   },
   admin: {
+
+    dashboard: "لوحة التحكم",
+    form: {
+      name: "الاسم",
+      description: "الوصف",
+      price: "السعر",
+      imageUrl: "رابط الصورة",
+      create: "إنشاء المنتج",
+      edit: "تعديل المنتج",
+      cancel: "إلغاء",
+    },
+    table: {
+      name: "الاسم",
+      description: "الوصف",
+      price: "السعر",
+      image: "الصورة",
+      timestamps: "التوقيت",
+      createdAt: "تاريخ الإنشاء",
+      updatedAt: "تاريخ التحديث",
+      actions: "الإجراءات",
+      searchProducts: "ابحث عن منتج...",
+      next: "التالي",
+      previous: "السابق",
+      productCatalog: "كتالوج المنتجات",
+      productdetails: "تفاصيل المنتج",
+      noProducts: "لا توجد منتجات متاحة.",
+    },
     products: {
       title: "إدارة المنتجات",
-      description: "يمكنك إضافة أو تعديل أو حذف المنتجات من هنا.",
       addProduct: "إضافة منتج جديد",
-      list: "قائمة المنتجات",
-      editProduct: "تعديل المنتج",
-      confirmDelete: "هل أنت متأكد من حذف هذا المنتج؟",
-      futureProducts: "المنتجات القادمة",
-      currentProducts: "المنتجات الحالية",
-      noProducts: "لا توجد منتجات.",
+      deleteconfirmation: "هل أنت متأكد من حذف هذا المنتج؟",
+    },
+    delete: {
+      cancel: "إلغاء",
       delete: "حذف",
-      edit: "تعديل",
-      form: {
-        name: "اسم المنتج",
-        description: "وصف المنتج",
-        price: "سعر المنتج",
-        imageUrl: "رابط الصورة",
-        submit: "إضافة المنتج",
-        update: "تحديث المنتج",
-        cancel: "إلغاء",
-      },
-      table: {
-        name: "الاسم",
-        description: "الوصف",
-        price: "السعر",
-        image: "الصورة",
-        actions: "الإجراءات",
-      },
-      actions: {
-        edit: "تعديل",
-        delete: "حذف",
-      },
     },
     futureProducts: {
       title: "إدارة المنتجات المستقبلية",
@@ -226,14 +228,14 @@ export default {
         name: "الاسم",
         email: "البريد الإلكتروني",
         role: "الدور",
-        actions: "الإجراءات"
+        actions: "الإجراءات",
       },
       form: {
         name: "الاسم",
         email: "البريد الإلكتروني",
-        role: "الدور"
-      }
-    }
+        role: "الدور",
+      },
+    },
   },
   verify: {
     title: "تحقق من البريد الإلكتروني",

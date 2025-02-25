@@ -10,7 +10,10 @@ export async function GET() {
     return NextResponse.json({ success: true, data: products }, { status: 200 });
   } catch (error) {
     console.error('Error fetching products:', error);
-    return NextResponse.json({ success: false, message: error instanceof Error ? error.message : 'An unexpected error occurred.' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: error instanceof Error ? error.message : 'An unexpected error occurred.' },
+      { status: 500 }
+    );
   }
 }
 
@@ -29,22 +32,25 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, data: product }, { status: 201 });
   } catch (error) {
     console.error('Error creating product:', error);
-    return NextResponse.json({ success: false, message: error instanceof Error ? error.message : 'An unexpected error occurred.' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: error instanceof Error ? error.message : 'An unexpected error occurred.' },
+      { status: 500 }
+    );
   }
 }
 
 // 🟢 تعديل منتج موجود
-export async function PUT(request: NextRequest, context: { params: Promise<{ id: string }> }) {
+export async function PUT(request: NextRequest) {
   try {
     await dbConnect();
-    const { id } = await context.params; // 🛠 Fix: Await params
+    const body = await request.json();
+    const { id, name, description, price, imageUrl } = body;
+    console.log('Received body:', id);
+    
 
     if (!id) {
-      return NextResponse.json({ success: false, message: 'Invalid product ID.' }, { status: 400 });
+      return NextResponse.json({ success: false, message: 'Product ID is required.' }, { status: 400 });
     }
-
-    const body = await request.json();
-    const { name, description, price, imageUrl } = body;
 
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
@@ -59,18 +65,22 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
     return NextResponse.json({ success: true, data: updatedProduct }, { status: 200 });
   } catch (error) {
     console.error('Error updating product:', error);
-    return NextResponse.json({ success: false, message: error instanceof Error ? error.message : 'An unexpected error occurred.' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: error instanceof Error ? error.message : 'An unexpected error occurred.' },
+      { status: 500 }
+    );
   }
 }
 
 // 🟢 حذف منتج
-export async function DELETE(request: NextRequest, context: { params: Promise<{ id: string }> }) {
+export async function DELETE(request: NextRequest) {
   try {
     await dbConnect();
-    const { id } = await context.params; // 🛠 Fix: Await params
+    const body = await request.json();
+    const { id } = body;
 
     if (!id) {
-      return NextResponse.json({ success: false, message: 'Invalid product ID.' }, { status: 400 });
+      return NextResponse.json({ success: false, message: 'Product ID is required.' }, { status: 400 });
     }
 
     const deletedProduct = await Product.findByIdAndDelete(id);
@@ -81,6 +91,9 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
     return NextResponse.json({ success: true, message: 'Product deleted successfully.' }, { status: 200 });
   } catch (error) {
     console.error('Error deleting product:', error);
-    return NextResponse.json({ success: false, message: error instanceof Error ? error.message : 'An unexpected error occurred.' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: error instanceof Error ? error.message : 'An unexpected error occurred.' },
+      { status: 500 }
+    );
   }
 }

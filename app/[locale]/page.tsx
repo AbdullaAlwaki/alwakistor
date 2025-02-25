@@ -18,7 +18,7 @@ export default function HomePage({ params }: { params: Promise<{ locale: string 
     });
 
     // ✅ جلب المنتجات من API
-    fetch("/api/future-products")
+    fetch("/api/products")
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {

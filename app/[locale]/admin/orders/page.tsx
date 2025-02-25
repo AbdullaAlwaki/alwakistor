@@ -1,7 +1,7 @@
 "use client"; // Mark this as a Client Component
 
 import React from 'react';
-import { useTranslation } from '../../../[locale]/useTranslation';
+import { useTranslation } from '../../useTranslation';
 
 export default function ManageOrders({ params }: { params: Promise<{ locale: string }> }) {
   const [locale, setLocale] = React.useState<string>('en');

@@ -3,64 +3,55 @@ import React, { useEffect, useState } from "react";
 import UserTable from "./components/UserTable";
 import UserFormModal from "./components/UserFormModal";
 import DeleteConfirmation from "./components/DeleteConfirmation";
-import LoadingSpinner from "./components/LoadingSpinner";
-import { User } from "./components/types";
+import LoadingIndicator from "./components/LoadingIndicator";
+import { User, ModalMode } from "./components/types";
 
 export default function ManageUsers() {
-  // State management
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | undefined>();
   const [loading, setLoading] = useState(true);
+  const [modalMode, setModalMode] = useState<ModalMode>('create');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch users from API
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch("/api/admin/users");
-        const data = await response.json();
-        setUsers(data.data || []);
-      } catch (err) {
-        setError("Failed to load users");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/admin/users");
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      
+      const formattedUsers = data.data.map((user: User) => ({
+        ...user,
+        emailVerificationTokenCreatedAt: user.emailVerificationTokenCreatedAt 
+          ? new Date(user.emailVerificationTokenCreatedAt).toLocaleString()
+          : 'N/A'
+      }));
+      
+      setUsers(formattedUsers);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load users");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchUsers();
-  }, []);
+  useEffect(() => { fetchUsers(); }, []);
 
-  // Handle form submission
   const handleSubmit = async (formData: User) => {
     setLoading(true);
     try {
-      const isEdit = !!selectedUser;
-      const method = isEdit ? "PUT" : "POST";
-      const url = "/api/admin/users"; // ❗️ استخدام نفس المسار للإضافة والتعديل
-      const body = isEdit
-        ? { ...formData, id: selectedUser?._id } // ❗️ إضافة id عند التعديل
-        : formData;
-
-      const response = await fetch(url, {
+      const method = modalMode === 'create' ? "POST" : "PUT";
+      const response = await fetch("/api/admin/users", {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) throw new Error("Request failed");
-
-      const data = await response.json();
-
-      setUsers((prev) =>
-        isEdit
-          ? prev.map((u) => (u._id === data.data._id ? data.data : u))
-          : [...prev, data.data]
-      );
-
+      await fetchUsers();
       setIsModalOpen(false);
-      setSelectedUser(undefined);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Operation failed");
     } finally {
@@ -68,37 +59,30 @@ export default function ManageUsers() {
     }
   };
 
-  // Handle user deletion
   const handleDelete = async () => {
     if (!selectedUser) return;
-
+    
     setLoading(true);
-
     try {
-      const response = await fetch("/api/admin/users", { // ❗️ استخدام نفس المسار
+      const response = await fetch(`/api/admin/users?id=${selectedUser._id}`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: selectedUser._id }), // ❗️ إرسال id عبر جسم الطلب
       });
 
       if (!response.ok) throw new Error("Delete failed");
-
-      const data = await response.json();
-
-      setUsers((prev) => prev.filter((u) => u._id !== selectedUser._id));
-      setIsDeleteOpen(false);
-      setSelectedUser(undefined);
+      await fetchUsers();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Deletion failed");
     } finally {
       setLoading(false);
+      setIsDeleteOpen(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+      {loading && <LoadingIndicator />}
+      
       <div className="max-w-6xl mx-auto">
-        {/* Header Section */}
         <header className="mb-8 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white">User Management</h1>
@@ -108,62 +92,50 @@ export default function ManageUsers() {
           </div>
           <button
             onClick={() => {
+              setModalMode('create');
               setSelectedUser(undefined);
               setIsModalOpen(true);
             }}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
           >
             Add New User +
           </button>
         </header>
 
-        {/* Loading & Error States */}
-        {loading && (
-          <div className="flex justify-center mt-20">
-            <LoadingSpinner size="lg" text="Loading users..." />
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {error}
           </div>
         )}
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>
-        )}
 
-        {/* User Table */}
         {!loading && !error && (
           <UserTable
             users={users}
             onEdit={(user) => {
+              setModalMode('edit');
               setSelectedUser(user);
               setIsModalOpen(true);
             }}
             onDelete={(id) => {
-              setSelectedUser(users.find((u) => u._id === id)); // تحديد المستخدم المحدد
+              setSelectedUser(users.find((u) => u._id === id));
               setIsDeleteOpen(true);
             }}
-            t={(key) => key.replace("_", " ")}
           />
         )}
 
-        {/* Modals */}
         <UserFormModal
           isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            setSelectedUser(undefined);
-          }}
+          onClose={() => setIsModalOpen(false)}
           onSubmit={handleSubmit}
           user={selectedUser}
-          isEditing={!!selectedUser}
-          t={(key) => key.replace("_", " ")}
+          mode={modalMode}
         />
+
         <DeleteConfirmation
           isOpen={isDeleteOpen}
           onConfirm={handleDelete}
-          onCancel={() => {
-            setIsDeleteOpen(false);
-            setSelectedUser(undefined);
-          }}
+          onCancel={() => setIsDeleteOpen(false)}
           userName={selectedUser?.name || ""}
-          t={(key) => key.replace("_", " ")}
         />
       </div>
     </div>

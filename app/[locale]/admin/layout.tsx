@@ -7,8 +7,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <Sidebar />
       
       {/* المحتوى الرئيسي (80% للديسكتوب) */}
-      <main className="flex-1 lg:w-4/5 p-4 lg:p-6">
-        <div className="max-w-full mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 lg:p-6">
+      <main className="flex-1 lg:w-4/5">
+        <div className="p-4 ">
           {children}
         </div>
       </main>

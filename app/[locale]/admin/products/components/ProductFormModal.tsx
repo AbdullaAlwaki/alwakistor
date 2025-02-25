@@ -1,106 +1,165 @@
-"use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Product, ModalMode } from "./types";
 
-interface ProductFormModalProps {
+interface Props {
   isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (formData: any) => void; // استقبال دالة الإرسال مع بيانات النموذج
-  product: any; // المنتج المراد تعديله أو إضافته
-  isEditing: boolean;
-  t: any; // ترجمة
+  onClose: () => void; // دالة لإغلاق النافذة
+  onSubmit: (formData: Product) => void;
+  product?: Product; // المنتج المراد تعديله (اختياري)
+  mode: ModalMode; // وضع النموذج (إنشاء أو تعديل)
+  t?: (key: string) => string; // دالة الترجمة (اختياري)
 }
 
 export default function ProductFormModal({
   isOpen,
   onClose,
   onSubmit,
-  product: initialProduct,
-  isEditing,
+  product,
+  mode,
   t,
-}: ProductFormModalProps) {
-  if (!isOpen) return null;
-
-  // إدارة حالة النموذج باستخدام React State
-  const [formData, setFormData] = useState({
-    name: initialProduct?.name || "",
-    description: initialProduct?.description || "",
-    price: initialProduct?.price || 0,
-    imageUrl: initialProduct?.imageUrl || "",
+}: Props) {
+  const [formData, setFormData] = useState<Product>({
+    _id: "",
+    name: "",
+    description: "",
+    price: 0,
+    imageUrl: "",
   });
 
-  // تحديث الحقول عند تغيير القيم
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // تحديث الحالة عند تغيير المنتج
+  useEffect(() => {
+    if (product) {
+      setFormData({
+        _id: product._id || "",
+        name: product.name || "",
+        description: product.description || "",
+        price: product.price || 0,
+        imageUrl: product.imageUrl || "",
+      });
+    } else {
+      setFormData({
+        _id: "",
+        name: "",
+        description: "",
+        price: 0,
+        imageUrl: "",
+      });
+    }
+  }, [product]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: name === "price" ? parseFloat(value) : value,
-    }));
+    setFormData({ ...formData, [name]: value });
   };
 
-  // إرسال النموذج
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData); // إرسال البيانات إلى الوالد
+    onSubmit(formData);
+    onClose(); // إغلاق النافذة بعد الإرسال
   };
 
+  // إغلاق النافذة عند الضغط على زر الإغلاق
+  const handleCancel = () => {
+    onClose(); // استدعاء دالة الإغلاق
+  };
+
+  // إغلاق النافذة عند الضغط خارج المحتوى
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose(); // إغلاق النافذة إذا تم الضغط على الطبقة الخارجية
+    }
+  };
+
+  if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-96">
-        <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">
-          {isEditing ? t('admin.products.editProduct') : t('admin.products.addProduct')}
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+      onClick={handleOverlayClick} // إغلاق النافذة عند الضغط خارجها
+    >
+      <div
+        className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md"
+        onClick={(e) => e.stopPropagation()} // منع الإغلاق عند الضغط داخل النافذة
+      >
+        <h2 className="text-xl font-bold mb-4">
+          {mode === "create" ? (t ? t('admin.form.create') : "Create New Product") : (t ? t('admin.form.edit') : "Edit Product")}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* حقل الاسم */}
-          <input
-            type="text"
-            name="name"
-            placeholder={t('admin.products.form.name')}
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full p-2 border rounded bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 focus:border-gray-500 focus:ring-gray-500"
-            required
-          />
-          {/* حقل الوصف */}
-          <input
-            type="text"
-            name="description"
-            placeholder={t('admin.products.form.description')}
-            value={formData.description}
-            onChange={handleChange}
-            className="w-full p-2 border rounded bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 focus:border-gray-500 focus:ring-gray-500"
-          />
-          {/* حقل السعر */}
-          <input
-            type="number"
-            name="price"
-            placeholder={t('admin.products.form.price')}
-            value={formData.price}
-            onChange={handleChange}
-            className="w-full p-2 border rounded bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 focus:border-gray-500 focus:ring-gray-500"
-            required
-          />
-          {/* حقل رابط الصورة */}
-          <input
-            type="text"
-            name="imageUrl"
-            placeholder={t('admin.products.form.imageUrl')}
-            value={formData.imageUrl}
-            onChange={handleChange}
-            className="w-full p-2 border rounded bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 focus:border-gray-500 focus:ring-gray-500"
-          />
-          {/* أزرار الإرسال والإلغاء */}
-          <div className="flex justify-end space-x-2">
+          {/* Name Field */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t ? t('admin.form.name') : "Name"}
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+              required
+            />
+          </div>
+
+          {/* Description Field */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t ? t('admin.form.description') : "Description"}
+            </label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+              rows={3}
+              required
+            />
+          </div>
+
+          {/* Price Field */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t ? t('admin.form.price') : "Price"}
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              name="price"
+              value={formData.price}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+              required
+            />
+          </div>
+
+          {/* Image URL Field */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t ? t('admin.form.imageUrl') : "Image URL"}
+            </label>
+            <input
+              type="url"
+              name="imageUrl"
+              value={formData.imageUrl}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+              required
+            />
+          </div>
+
+          {/* Submit and Cancel Buttons */}
+          <div className="flex justify-end space-x-3">
             <button
-              type="submit"
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+              type="button"
+              onClick={handleCancel} // إغلاق النافذة عند الضغط على "إلغاء"
+              className="px-5 py-2.5 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg transition-colors"
             >
-              {isEditing ? t('admin.products.form.update') : t('admin.products.form.submit')}
+              {t ? t('admin.form.cancel') : "Cancel"}
             </button>
             <button
-              onClick={onClose}
-              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+              type="submit"
+              className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
             >
-              {t('admin.products.form.cancel')}
+              {mode === "create" ? (t ? t('admin.form.create') : "Create") : (t ? t('admin.form.edit') : "Save Changes")}
             </button>
           </div>
         </form>

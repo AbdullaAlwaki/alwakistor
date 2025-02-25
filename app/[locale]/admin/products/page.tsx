@@ -1,185 +1,178 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useTranslation } from "../../../[locale]/useTranslation";
 import ProductTable from "./components/ProductTable";
 import ProductFormModal from "./components/ProductFormModal";
 import DeleteConfirmation from "./components/DeleteConfirmation";
 import LoadingIndicator from "./components/LoadingIndicator";
+import { useTranslation } from "../../useTranslation"; // تأكد من المسار الصحيح
+import { Product, ModalMode } from "./components/types"; // استيراد الواجهة الموحدة
 
 export default function ManageProducts({ params }: { params: Promise<{ locale: string }> }) {
-  const [locale, setLocale] = useState<string>('en');
-  const [products, setProducts] = useState<any[]>([]);
-  const [newProduct, setNewProduct] = useState({ name: "", description: "", price: 0, imageUrl: "" });
-  const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<Product | undefined>();
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [productIdToDelete, setProductIdToDelete] = useState<string | null>(null);
-  const { t } = useTranslation(locale);
+  const [modalMode, setModalMode] = useState<ModalMode>("create");
+  const [isModalOpen, setIsModalOpen] = useState(false); // حالة فتح نافذة النموذج
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false); // حالة فتح نافذة التأكيد
+  const [error, setError] = useState<string | null>(null);
+
+ const [locale, setLocale] = React.useState<string>('en');
+   const { t } = useTranslation(locale);
+ 
+   React.useEffect(() => {
+     if (params) {
+       params.then((unwrappedParams) => {
+         setLocale(unwrappedParams.locale);
+       });
+     }
+   }, [params]);
+  // جلب المنتجات من الـ API
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/admin/products");
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      setProducts(data.data || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load products");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (params) {
-      params.then((unwrappedParams) => {
-        setLocale(unwrappedParams.locale);
+    fetchProducts();
+  }, []);
+
+  // إرسال بيانات النموذج (إنشاء أو تعديل)
+  const handleSubmit = async (formData: Product) => {
+    setLoading(true);
+    try {
+      const method = modalMode === "create" ? "POST" : "PUT";
+      const body =
+        modalMode === "create"
+          ? formData // لإنشاء منتج جديد
+          : { ...formData, id: selectedProduct?._id }; // لتعديل منتج موجود
+
+      if (modalMode === "edit" && !selectedProduct?._id) {
+        throw new Error("Product ID is missing.");
+      }
+
+      const response = await fetch("/api/admin/products", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Request failed");
+      }
+
+      await fetchProducts(); // تحديث القائمة بعد الإرسال
+      setIsModalOpen(false); // إغلاق النافذة بعد الإرسال
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Operation failed");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // جلب المنتجات الحالية من الخادم
-    fetch("/api/admin/products")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Current Products:", data); // ✅ تسجيل البيانات للتحقق منها
-        setProducts(data.data || []); // ✅ التأكد من أن البيانات ليست غير معرفة
-      })
-      .catch((err) => {
-        console.error("Error fetching products:", err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [params]);
+  // حذف المنتج
+  const handleDelete = async () => {
+    if (!selectedProduct) return;
 
-  const handleAddProduct = async (formData: any) => {
     setLoading(true);
     try {
       const response = await fetch("/api/admin/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(errorData || "Invalid server response.");
-      }
-
-      const data = await response.json();
-      if (data.success) {
-        setProducts([...products, data.data]);
-        setIsModalOpen(false);
-      }
-    } catch (error) {
-      console.error("Error adding product:", error);
-      alert(error instanceof Error ? error.message : "An unexpected error occurred while adding the product.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEditProduct = async (formData: any) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`/api/admin/products/${editingProduct._id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(errorData || "Invalid server response.");
-      }
-
-      const data = await response.json();
-      if (data.success) {
-        setProducts(products.map((p) => (p._id === editingProduct._id ? data.data : p)));
-        setEditingProduct(null);
-        setIsModalOpen(false);
-      }
-    } catch (error) {
-      console.error("Error updating product:", error);
-      alert(error instanceof Error ? error.message : "An unexpected error occurred while updating the product.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDeleteProduct = async () => {
-    if (!productIdToDelete) return;
-    setLoading(true);
-    try {
-      const response = await fetch(`/api/admin/products/${productIdToDelete}`, {
         method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: selectedProduct._id }), // تمرير المعرف في جسم الطلب
       });
 
       if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(errorData || "Invalid server response.");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Delete failed");
       }
 
-      const data = await response.json();
-      if (data.success) {
-        setProducts(products.filter((p) => p._id !== productIdToDelete));
-        setIsDeleteModalOpen(false);
-      } else {
-        alert(data.message || "Failed to delete product.");
-      }
-    } catch (error) {
-      console.error("Error deleting product:", error);
-      alert(error instanceof Error ? error.message : "An unexpected error occurred while deleting the product.");
+      await fetchProducts(); // تحديث القائمة بعد الحذف
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Deletion failed");
     } finally {
       setLoading(false);
+      setIsDeleteOpen(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-4">
-          {t('admin.products.title')}
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">{t('admin.products.description')}</p>
-      </header>
-
-      {/* زر إضافة منتج */}
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mb-8"
-      >
-        {t('admin.products.addProduct')}
-      </button>
-
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+      {/* مؤشر التحميل */}
       {loading && <LoadingIndicator />}
 
-      {!loading && (
-        <ProductTable
-          products={products} // ✅ عرض المنتجات الحالية فقط
-          onEdit={(product) => {
-            setEditingProduct(product);
-            setIsModalOpen(true);
-          }}
-          onDelete={(id) => {
-            setProductIdToDelete(id);
-            setIsDeleteModalOpen(true);
-          }}
-          t={t}
-        />
+      {/* رسالة الخطأ */}
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 rounded mb-4 p-2">
+          {error}
+        </div>
       )}
 
-      {isModalOpen && (
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <header className="mb-8 flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+            {t("admin.products.title") || "Manage Products"}
+          </h1>
+          <button
+            onClick={() => {
+              setModalMode("create"); // وضع النموذج لإنشاء منتج جديد
+              setSelectedProduct(undefined); // مسح المنتج المحدد
+              setIsModalOpen(true); // فتح نافذة النموذج
+            }}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
+          >
+            {t("admin.products.addProduct") || "Add New Product +"}
+          </button>
+        </header>
+
+        {/* جدول المنتجات */}
+        {!loading && !error && (
+          <ProductTable
+            products={products}
+            onEdit={(product) => {
+              setModalMode("edit"); // وضع النموذج لتعديل المنتج
+              setSelectedProduct(product); // تحديد المنتج المراد تعديله
+              setIsModalOpen(true); // فتح نافذة النموذج
+            }}
+            onDelete={(id) => {
+              const product = products.find((p) => p._id === id);
+              console.log("Selected product for deletion:", product); // تسجيل المنتج المحدد
+              setSelectedProduct(product);
+              setIsDeleteOpen(true); // فتح نافذة تأكيد الحذف
+            }}
+            t={t}
+          />
+        )}
+
+        {/* نافذة النموذج */}
         <ProductFormModal
-          isOpen={isModalOpen}
-          onClose={() => {
-            setEditingProduct(null);
-            setIsModalOpen(false);
-          }}
-          onSubmit={editingProduct ? handleEditProduct : handleAddProduct}
-          product={editingProduct || newProduct}
-          isEditing={!!editingProduct}
-          t={t}
+          isOpen={isModalOpen} // حالة فتح النافذة
+          onClose={() => setIsModalOpen(false)} // إغلاق النافذة
+          onSubmit={handleSubmit} // إرسال البيانات
+          product={selectedProduct} // المنتج المراد تعديله (اختياري)
+          mode={modalMode} // وضع النموذج (إنشاء أو تعديل)
+          t={t} // دالة الترجمة
         />
-      )}
 
-      {isDeleteModalOpen && (
+        {/* نافذة تأكيد الحذف */}
         <DeleteConfirmation
-          onDelete={handleDeleteProduct}
-          onCancel={() => {
-            setIsDeleteModalOpen(false);
-            setProductIdToDelete(null);
-          }}
-          t={t}
+          isOpen={isDeleteOpen} // حالة فتح النافذة
+          onConfirm={handleDelete} // تأكيد الحذف
+          onCancel={() => setIsDeleteOpen(false)} // إلغاء الحذف
+          productName={selectedProduct?.name || "Unnamed Product"} // اسم المنتج
+          t={t} // دالة الترجمة
         />
-      )}
+      </div>
     </div>
   );
 }

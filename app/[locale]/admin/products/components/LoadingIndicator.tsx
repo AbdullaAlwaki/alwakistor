@@ -1,11 +1,9 @@
-"use client";
-
 import React from "react";
 
 export default function LoadingIndicator() {
   return (
-    <div className="flex justify-center items-center h-32">
-      <span className="text-gray-600 dark:text-gray-400">جارٍ التحميل...</span>
+    <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
     </div>
   );
 }
