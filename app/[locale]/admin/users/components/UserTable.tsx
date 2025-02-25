@@ -179,9 +179,6 @@ const UserTable = ({ users, onEdit, onDelete, isLoading, t }: Props) => {
                   <div className="font-semibold dark:text-white">
                     {user.name}
                   </div>
-                  <div className="text-sm text-blue-600 dark:text-blue-400">
-                    {user.email}
-                  </div>
                 </div>
               </div>
               <div className="hidden md:flex col-span-3 items-center">
