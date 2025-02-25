@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import dbConnect from "../../../lib/mongodb";
 import Product from "../../../models/Product";
-import FutureProduct from "../../../models/FutureProduct";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -19,18 +18,8 @@ export async function GET(request: Request) {
       { name: { $regex: query, $options: "i" } },
       { name: 1 }
     ).limit(5);
-
-    // البحث عن المنتجات المستقبلية التي تحتوي على النص المدخل
-    const futureProducts = await FutureProduct.find(
-      { name: { $regex: query, $options: "i" } },
-      { name: 1 }
-    ).limit(5);
-
     // دمج الاقتراحات من كلا المصدرَين
-    const suggestions = [
-      ...products.map((product) => product.name),
-      ...futureProducts.map((product) => product.name),
-    ].slice(0, 5); // ✅ تحديد العدد الإجمالي للاقتراحات
+    const suggestions = products.map((product) => product.name).slice(0, 5); // ✅ تحديد العدد الإجمالي للاقتراحات
 
     return NextResponse.json({ suggestions });
   } catch (error) {
