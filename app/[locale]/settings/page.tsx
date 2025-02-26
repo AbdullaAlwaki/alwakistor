@@ -1,181 +1,68 @@
 "use client";
-import { use } from 'react';
+import { use } from "react";
+import { useState, useContext, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useState, useContext, useReducer, useCallback, memo } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { useAuth } from "../../../context/AuthContext";
 import { DarkModeContext } from "../../../context/DarkModeContext";
-import { LogIn, LogOut, Moon, Sun, Settings } from "lucide-react";
+import { LogOut, Moon, Sun } from "lucide-react";
 import { useTranslation } from "../../[locale]/useTranslation";
 
-type Locale = 'en' | 'ar';
-type NotificationType = 'email' | 'push';
-
-interface ReducerState {
-  notifications: Record<NotificationType, boolean>;
-}
-
-type ReducerAction = { type: 'TOGGLE_NOTIFICATION'; payload: NotificationType };
+type Locale = "en" | "ar";
+type NotificationType = "email" | "push";
 
 const ReactCountryFlag = dynamic(() => import("react-country-flag"), {
   ssr: false,
-  loading: () => <div className="w-6 h-6 bg-gray-200 rounded animate-pulse" />
+  loading: () => <div className="w-6 h-6 bg-gray-200 rounded animate-pulse" />,
 });
-
-const Section = memo(({ title, children }: { title: string; children: React.ReactNode }) => {
-  const { isDarkMode } = useContext(DarkModeContext);
-  return (
-    <motion.section
-      initial={{ y: 20 }}
-      animate={{ y: 0 }}
-      className={`rounded-xl p-6 mb-6 ${
-        isDarkMode ? 'bg-gray-700/20' : 'bg-gray-50'
-      }`}
-    >
-      <h2 className="text-xl font-semibold mb-6">{title}</h2>
-      {children}
-    </motion.section>
-  );
-});
-
-const LocaleSelector = memo(({ locale, t, onChange }: { 
-  locale: Locale;
-  t: (key: string) => string;
-  onChange: () => void;
-}) => (
-  <motion.button
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    onClick={onChange}
-    className="w-full flex items-center justify-between p-4 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-  >
-    <span className="font-medium">{t('settings.language')}</span>
-    <div className="flex items-center gap-2">
-      <ReactCountryFlag
-        countryCode={locale === 'ar' ? 'US' : 'SA'}
-        svg
-        className="text-2xl"
-      />
-      <span className="font-medium">
-        {locale === 'ar' ? t('settings.english') : t('settings.arabic')}
-      </span>
-    </div>
-  </motion.button>
-));
-
-const NotificationToggle = memo(({ type, checked, onToggle, t, locale }: { 
-  type: NotificationType;
-  checked: boolean;
-  onToggle: () => void;
-  t: (key: string) => string;
-  locale: Locale;
-}) => (
-  <div className="flex items-center justify-between p-3">
-    <span className={locale === 'ar' ? 'text-right' : 'text-left'}>
-      {t(`settings.${type}Notifications`)}
-    </span>
-    <button
-      onClick={onToggle}
-      className={`relative w-12 h-6 rounded-full transition-colors ${
-        checked ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
-      }`}
-    >
-      <div
-        className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${
-          checked 
-            ? (locale === 'ar' ? 'left-1' : 'right-1') 
-            : (locale === 'ar' ? 'right-1' : 'left-1')
-        }`}
-      />
-    </button>
-  </div>
-));
-
-const LogoutButton = memo(({ onLogout, t }: { 
-  onLogout: () => void;
-  t: (key: string) => string;
-}) => (
-  <button
-    onClick={onLogout}
-    className="w-full text-left p-3 rounded-lg bg-red-100 dark:bg-red-900/20 text-red-500 hover:bg-red-200 dark:hover:bg-red-900/30 transition-colors"
-  >
-    {t('settings.logout')}
-  </button>
-));
-
-const LoginLink = memo(({ locale, t }: { 
-  locale: Locale;
-  t: (key: string) => string;
-}) => (
-  <Link
-    href={`/${locale}/login`}
-    className="block p-3 rounded-lg bg-green-100 dark:bg-green-900/20 text-green-500 hover:bg-green-200 dark:hover:bg-green-900/30 transition-colors"
-  >
-    {t('settings.login')}
-  </Link>
-));
-
-const DarkModeToggle = memo(({ isDark, onToggle, t }: { 
-  isDark: boolean;
-  onToggle: () => void;
-  t: (key: string) => string;
-}) => (
-  <button
-    onClick={onToggle}
-    className="flex items-center justify-between w-full p-3 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-  >
-    <span>{t(`settings.${isDark ? 'dark' : 'light'}`)}</span>
-    {isDark ? <Moon size={20} /> : <Sun size={20} />}
-  </button>
-));
-
-const VerificationStatus = memo(({ t }: { 
-  t: (key: string) => string;
-}) => (
-  <div className="p-3 rounded-lg bg-blue-100 dark:bg-blue-900/20 text-blue-500">
-    {t('settings.verifiedAccount')}
-  </div>
-));
 
 const SettingsPage = ({ params }: { params: Promise<{ locale: Locale }> }) => {
-  const { locale: initialLocale } = use(params);
-  const [locale, setLocale] = useState<Locale>(initialLocale);
-  const [state, dispatch] = useReducer((state: ReducerState, action: ReducerAction) => {
-    if (action.type === 'TOGGLE_NOTIFICATION') {
-      return {
-        ...state,
-        notifications: {
-          ...state.notifications,
-          [action.payload]: !state.notifications[action.payload]
-        }
-      };
-    }
-    return state;
-  }, { notifications: { email: true, push: true } });
+  // تفكيك الـ Promise باستخدام use()
+  const resolvedParams = use(params);
+  const { locale } = resolvedParams;
 
-  const { isAuthenticated, logout } = useAuth();
+  const [notifications, setNotifications] = useState({
+    email: true,
+    push: true,
+  });
+
+  const { user, isAuthenticated, logout } = useAuth();
   const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext);
   const { t } = useTranslation(locale);
   const router = useRouter();
 
+  const handleToggleNotification = useCallback((type: NotificationType) => {
+    setNotifications(prev => ({ ...prev, [type]: !prev[type] }));
+  }, []);
+
   const handleLanguageChange = useCallback(() => {
-    const newLocale = locale === 'ar' ? 'en' : 'ar';
-    setLocale(newLocale);
+    const newLocale = locale === "ar" ? "en" : "ar";
     router.push(`/${newLocale}/settings`);
   }, [locale, router]);
 
   const handleLogout = useCallback(async () => {
-    if (!confirm(t('settings.logoutConfirmation'))) return;
+    if (!confirm(t("settings.logoutConfirmation"))) return;
     
     try {
       await logout();
       router.push(`/${locale}/login`);
     } catch (error) {
-      alert(t('settings.logoutError'));
+      alert(t("settings.logoutError"));
     }
   }, [logout, router, locale, t]);
+
+  const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
+    <motion.section
+      initial={{ y: 20 }}
+      animate={{ y: 0 }}
+      className={`rounded-xl p-6 mb-6 ${isDarkMode ? "bg-gray-700/20" : "bg-gray-50"}`}
+    >
+      <h2 className="text-xl font-semibold mb-6">{title}</h2>
+      {children}
+    </motion.section>
+  );
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -185,42 +72,101 @@ const SettingsPage = ({ params }: { params: Promise<{ locale: Locale }> }) => {
           animate={{ opacity: 1 }}
           className="max-w-2xl mx-auto"
         >
-          <Section title={t('settings.title')}>
-            <div className="space-y-6">
-              <LocaleSelector 
-                locale={locale}
-                t={t}
-                onChange={handleLanguageChange}
-              />
-              
-              <DarkModeToggle
-                isDark={isDarkMode}
-                onToggle={toggleDarkMode}
-                t={t}
-              />
-
+          {/* Profile Section */}
+          {isAuthenticated && user && (
+            <Section title={t("settings.profile")}>
               <div className="space-y-4">
-                {(['email', 'push'] as NotificationType[]).map(type => (
-                  <NotificationToggle
-                    key={type}
-                    type={type}
-                    checked={state.notifications[type]}
-                    onToggle={() => dispatch({ type: 'TOGGLE_NOTIFICATION', payload: type })}
-                    t={t}
-                    locale={locale}
+                <div>
+                  <p className="font-medium mb-2">{t("settings.name")}</p>
+                  <p className="p-3 bg-gray-100 dark:bg-gray-700 rounded">{user.name}</p>
+                </div>
+                <div>
+                  <p className="font-medium mb-2">{t("settings.email")}</p>
+                  <p className="p-3 bg-gray-100 dark:bg-gray-700 rounded">{user.email}</p>
+                </div>
+                <Link 
+                  href={`/${locale}/profile/edit`}
+                  className="block px-4 py-3 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-center"
+                >
+                  {t("settings.editProfile")}
+                </Link>
+              </div>
+            </Section>
+          )}
+
+          {/* Preferences Section */}
+          <Section title={t("settings.preferences")}>
+            <div className="space-y-6">
+              {/* Language Selector */}
+              <button
+                onClick={handleLanguageChange}
+                className="w-full flex items-center justify-between p-4 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
+                <span className="font-medium">{t("settings.language")}</span>
+                <div className="flex items-center gap-2">
+                  <ReactCountryFlag
+                    countryCode={locale === "ar" ? "SA" : "US"}
+                    svg
+                    className="text-2xl"
                   />
+                  <span className="font-medium">
+                    {locale === "ar" ? t("settings.arabic") : t("settings.english")}
+                  </span>
+                </div>
+              </button>
+
+              {/* Dark Mode Toggle */}
+              <button
+                onClick={toggleDarkMode}
+                className="w-full flex items-center justify-between p-4 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
+                <span>{t(`settings.${isDarkMode ? "dark" : "light"}`)}</span>
+                {isDarkMode ? <Moon size={20} /> : <Sun size={20} />}
+              </button>
+
+              {/* Notifications */}
+              <div className="space-y-4">
+                {Object.entries(notifications).map(([type, status]) => (
+                  <div key={type} className="flex items-center justify-between p-3">
+                    <span>{t(`settings.${type}Notifications`)}</span>
+                    <button
+                      onClick={() => handleToggleNotification(type as NotificationType)}
+                      className={`relative w-12 h-6 rounded-full transition-colors ${
+                        status ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"
+                      }`}
+                    >
+                      <div
+                        className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${
+                          status 
+                            ? locale === "ar" ? "left-1" : "right-1" 
+                            : locale === "ar" ? "right-1" : "left-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
                 ))}
               </div>
-
-              {isAuthenticated ? (
-                <>
-                  <VerificationStatus t={t} />
-                  <LogoutButton onLogout={handleLogout} t={t} />
-                </>
-              ) : (
-                <LoginLink locale={locale} t={t} />
-              )}
             </div>
+          </Section>
+
+          {/* Actions Section */}
+          <Section title={t("settings.actions")}>
+            {isAuthenticated ? (
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 p-3 rounded-lg bg-red-100 dark:bg-red-900/20 text-red-500 hover:bg-red-200 dark:hover:bg-red-900/30 transition-colors"
+              >
+                <LogOut size={18} />
+                <span>{t("settings.logout")}</span>
+              </button>
+            ) : (
+              <Link
+                href={`/${locale}/login`}
+                className="block p-3 rounded-lg bg-green-100 dark:bg-green-900/20 text-green-500 hover:bg-green-200 dark:hover:bg-green-900/30 transition-colors text-center"
+              >
+                {t("settings.login")}
+              </Link>
+            )}
           </Section>
         </motion.div>
       </main>
