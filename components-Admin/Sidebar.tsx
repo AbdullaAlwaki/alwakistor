@@ -186,11 +186,20 @@ const MobileSidebar = memo(
   }
 );
 
-const Sidebar = memo(({ params }: { params: { locale: string } }) => {
+const Sidebar = memo(({ params }: { params: Promise<{ locale: string }> }) => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const { t } = useTranslation(params.locale); // استخدام params.locale مباشرة
+  const [locale, setLocale] = useState<string>("en"); // حالة افتراضية للغة
+
+  useEffect(() => {
+    // استخراج locale من Promise
+    params.then(({ locale }) => {
+      setLocale(locale);
+    });
+  }, [params]);
+
+  const { t } = useTranslation(locale); // استخدام locale بعد استخراجها
 
   useEffect(() => {
     const handleResize = () => {
