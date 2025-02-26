@@ -26,7 +26,7 @@ import {
 import { Noto_Sans_Arabic } from "next/font/google";
 import { useTranslation } from "../app/[locale]/useTranslation";
 
-// Translation function type
+// تعريف نوع دالة الترجمة
 type TranslateFunction = (key: string) => string;
 
 const arabicFont = Noto_Sans_Arabic({
@@ -186,12 +186,12 @@ const MobileSidebar = memo(
   }
 );
 
-const Sidebar = memo(({ params }: { params: Promise<{ locale: string }> }) => {
+const Sidebar = memo(({ params }: { params: { locale: string } }) => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [locale, setLocale] = React.useState<string>("ar");
-  const { t } = useTranslation(locale);
+  const { t } = useTranslation(params.locale); // استخدام params.locale مباشرة
+
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 1024;
@@ -220,7 +220,6 @@ const Sidebar = memo(({ params }: { params: Promise<{ locale: string }> }) => {
 
   return (
     <SidebarContext.Provider value={{ isCollapsed, toggleCollapse }}>
-      {/* زر الهمبرجر المعدل */}
       {isMobile && (
         <motion.button
           initial={{ opacity: 0 }}
@@ -237,7 +236,6 @@ const Sidebar = memo(({ params }: { params: Promise<{ locale: string }> }) => {
           )}
         </motion.button>
       )}
-      {/* سايدبار الديسكتوب */}
       <aside
         className={`hidden lg:block ${
           isCollapsed ? "w-20" : "w-64"
@@ -303,7 +301,6 @@ const Sidebar = memo(({ params }: { params: Promise<{ locale: string }> }) => {
           </div>
         )}
       </aside>
-      {/* قائمة الجوال */}
       <MobileSidebar isOpen={isMobileOpen} onClose={toggleMobileMenu} t={t} />
     </SidebarContext.Provider>
   );
