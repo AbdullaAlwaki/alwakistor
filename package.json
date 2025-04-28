@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "alwaki": "git add . && git commit -m 'add edit 21.02' && git push"
+    "alwaki": "git add .",
+    "alwaki2": "git commit -m 'add edit 28.04' && git push"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
