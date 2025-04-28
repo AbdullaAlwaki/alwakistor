@@ -44,7 +44,7 @@ export default function ManageUsers() {
     try {
       const method = modalMode === 'create' ? "POST" : "PUT";
       const response = await fetch("/api/admin/users", {
-        method,
+        method : method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
@@ -64,8 +64,10 @@ export default function ManageUsers() {
     
     setLoading(true);
     try {
-      const response = await fetch(`/api/admin/users?id=${selectedUser._id}`, {
+      const response = await fetch(`/api/admin/users`, {
         method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: selectedUser._id }),
       });
 
       if (!response.ok) throw new Error("Delete failed");

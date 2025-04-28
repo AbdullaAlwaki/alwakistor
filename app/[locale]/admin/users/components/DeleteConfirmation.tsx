@@ -1,6 +1,5 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { XMarkIcon } from '@heroicons/react/24/outline';
 
 const DeleteConfirmation = ({ 
   isOpen, 
